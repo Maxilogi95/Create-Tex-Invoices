@@ -6,6 +6,7 @@ from tkinter import messagebox
 # Sort Combobox of custumers with radiobuttons (by number, name1, name2)
 # filter Combobox of custumers + reset filter and sort
 # Mindestgröße / Maximalgröße
+# onselect: cbox.bind("<<ComboboxSelected>>", function) change customer content
 class View(Tk):
     def __init__(self):
         Tk.__init__(self)
