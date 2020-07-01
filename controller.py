@@ -11,7 +11,12 @@ class Controller():
             "number"    : "", 
             "postcode"  : "", 
             "location"  : "", 
-            "country"   : ""
+            "country"   : "",
+            "mail"      : "",
+            "phone"     : "",
+            "bank"      : "",
+            "iban"      : "",
+            "bic"       : ""
         }
         self.number = 0
         self.customer = []
@@ -24,28 +29,48 @@ class Controller():
         self.model = model.Model()
         self.gui = view.View()
 
+        # Update
+        self._updateData()
+
         # GUI
+        self._configView()
         self.gui.mainloop()
 
     def _getInitialData(self):
         print("Read Init File")
 
-    def _setInitialView(self):
-        print("Set View")
-
-    def _readInputView(self):
-        print("Read Input Data")
-
     def _writeInitFile(self):
         print("Write Init File")
 
-    def _isNewCustomer(self):
-        print("Does customer exist?")
-        _new = True
-        return _new
+    def _updateData(self):
+        self.path = ""
+        self.company = {
+            "name"      : self.gui.companyName.get(), 
+            "street"    : self.gui.companyStreet.get(),
+            "number"    : self.gui.companyStreetNumber.get(),
+            "postcode"  : self.gui.companyPostcode.get(),
+            "location"  : self.gui.companyLocation.get(),
+            "country"   : self.gui.companyCountry.get(),
+            "mail"      : self.gui.companyMail.get(),
+            "phone"     : self.gui.companyPhone.get(),
+            "bank"      : self.gui.companyBank.get(),
+            "iban"      : self.gui.companyIban.get(),
+            "bic"       : self.gui.companyBic.get()
+        }
+        self.number = 0
+        self.customer = []
 
-    def _newCustomer(self):
-        print("New customer")
+    def _setInitialView(self):
+        print("Set View")
+
+    def _configView(self):
+        print("Config View")
+        self.gui.btnCreate.config(command=self.createInvoice)
+        self.gui.btnChange.config(command=self.changeCustomer)
+
+    def _readInputView(self):
+        print("Read Input Data")
+        self._updateData()
 
     def changeCustomer(self):
         print("Change customer")
@@ -53,34 +78,12 @@ class Controller():
     def _deleteCustomer(self):
         print("Delete customer not allowed")
 
-    def _isAllDataOk(self):
-        print("Data ok? Filled?")
-        _ok = True
-        _ok = _ok and self.path != ""
-        print("  Data is ok: " + str(_ok))
-        return _ok
-
-    def doCreateInvoice(self):
-        print("Create Tex File with Input Data")
-
     def createInvoice(self):
         print("Create Invoice")
-        _save = True
         self._readInputView()
-        if not self._isAllDataOk():
-            print("  Message Box: Trotzdem speichern?")
-            _save = True # Rückgabe von Message Box
-
-        if not _save:
+        _created = self.model.createInvoice()
+        if not _created:
             return
-
-        if self._isNewCustomer():
-            self._newCustomer()
-
         self._writeInitFile()
 
-        self.doCreateInvoice()
-
-
-
-Controller().createInvoice()
+Controller()
