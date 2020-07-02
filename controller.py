@@ -3,24 +3,6 @@ import model
 
 class Controller():
     def __init__(self):
-        # Variables
-        self.path = ""
-        self.company = {
-            "name"      : "", 
-            "street"    : "", 
-            "number"    : "", 
-            "postcode"  : "", 
-            "location"  : "", 
-            "country"   : "",
-            "mail"      : "",
-            "phone"     : "",
-            "bank"      : "",
-            "iban"      : "",
-            "bic"       : ""
-        }
-        self.number = 0
-        self.customer = []
-
         # Initial Data
         self._getInitialData()
         self._setInitialView()
@@ -43,22 +25,27 @@ class Controller():
         print("Write Init File")
 
     def _updateData(self):
+        self.model.myCompany.company = self.gui.myCompany.name.get()
+        self.model.myCompany.address = self.gui.myCompany.street.get()
+        self.model.myCompany.postcode = self.gui.myCompany.postcode.get()
+        self.model.myCompany.city = self.gui.myCompany.city.get()
+        self.model.myCompany.mail = self.gui.myCompany.mail.get()
+        self.model.myCompany.phone = self.gui.myCompany.phone.get()
+        self.model.myCompany.bank = self.gui.myCompany.bank.get()
+        self.model.myCompany.iban = self.gui.myCompany.iban.get()
+        self.model.myCompany.bic = self.gui.myCompany.bic.get()
+
+
         self.path = ""
-        self.company = {
-            "name"      : self.gui.companyName.get(), 
-            "street"    : self.gui.companyStreet.get(),
-            "number"    : self.gui.companyStreetNumber.get(),
-            "postcode"  : self.gui.companyPostcode.get(),
-            "location"  : self.gui.companyLocation.get(),
-            "country"   : self.gui.companyCountry.get(),
-            "mail"      : self.gui.companyMail.get(),
-            "phone"     : self.gui.companyPhone.get(),
-            "bank"      : self.gui.companyBank.get(),
-            "iban"      : self.gui.companyIban.get(),
-            "bic"       : self.gui.companyBic.get()
-        }
         self.number = 0
-        self.customer = []
+
+        self.model.myCustomer.company = self.gui.myCustomer.company.get()
+        self.model.myCustomer.name1 = self.gui.myCustomer.name1.get()
+        self.model.myCustomer.name2 = self.gui.myCustomer.name2.get()
+        self.model.myCustomer.address = self.gui.myCustomer.street.get()
+        self.model.myCustomer.postcode = self.gui.myCustomer.postcode.get()
+        self.model.myCustomer.city = self.gui.myCustomer.city.get()
+        self.model.myCustomer.country = self.gui.myCustomer.country.get()
 
     def _setInitialView(self):
         print("Set View")

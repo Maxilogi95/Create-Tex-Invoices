@@ -153,6 +153,25 @@ class Company(LabelFrame):
         self.phone.grid(row=start_row, column=0, columnspan=maxColCount, sticky='w', padx=1)
         start_row += 1
 
+        self.lblBank = Label(self, text="Bank:")
+        self.bank = Entry(self, width=63)
+        self.lblIban = Label(self, text="IBAN:")
+        self.iban = Entry(self, width=63)
+        self.lblBic = Label(self, text="BIC:")
+        self.bic = Entry(self, width=63)
+        self.lblBank.grid(row=start_row, column=0, sticky='w')
+        start_row += 1
+        self.bank.grid(row=start_row, column=0, columnspan=maxColCount, sticky='w', padx=1)
+        start_row += 1
+        self.lblIban.grid(row=start_row, column=0, sticky='w')
+        start_row += 1
+        self.iban.grid(row=start_row, column=0, columnspan=maxColCount, sticky='w', padx=1)
+        start_row += 1
+        self.lblBic.grid(row=start_row, column=0, sticky='w')
+        start_row += 1
+        self.bic.grid(row=start_row, column=0, columnspan=maxColCount, sticky='w', padx=1)
+        start_row += 1
+
 class Invoice(LabelFrame):
     def __init__(self):
         LabelFrame.__init__(self, text="Rechnungsdaten")
@@ -171,7 +190,7 @@ class Invoice(LabelFrame):
         # Data Frame with scrollable Data Fields
         self.frameData = Frame(self)
         self.frameData.grid(row=self.row, column=0, columnspan=10)
-        self.canvas = Canvas(self.frameData, width=750)
+        self.canvas = Canvas(self.frameData, width=875)
         self.canvas.grid(row=0, column=0, sticky='nsew')
 
         self.canvasFrame = Frame(self.canvas)
