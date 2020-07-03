@@ -4,6 +4,7 @@ class Model():
         self.path = ""
         self.myCustomer = Customer()
         self.myCompany = Company()
+        self.myInvoice = Invoice()
         self.myCustomerList = []
         self.chooseCustomerList = []
 
@@ -33,42 +34,34 @@ class Model():
 
     def _isAllDataOk(self):
         _ok = False
-        _ok = self._isCompanyDataOk() and self._isCustomerDataOk()
-        return _ok
-
-    def _isCustomerDataOk(self):
-        _ok = False
-        _okName = (
-            self.myCustomer.company == "" and (self.myCustomer.name1 != "" and self.myCustomer.name2 != "")
-            or 
-            self.myCustomer.company != "" and (self.myCustomer.name1 == "" and self.myCustomer.name2 == "")
-        )
-        _okAddress = self.myCustomer.address != ""
-        _okPostcode = self.myCustomer.postcode != ""
-        _okCity = self.myCustomer.city != ""
-
-        _ok = _okName and _okAddress and _okPostcode and _okCity
-        return _ok
-
-    def _isCompanyDataOk(self):
-        _ok = False
-        _okCompany = self.myCompany.company != ""
-        _okAddress = self.myCompany.address != ""
-        _okPostcode = self.myCompany.postcode != ""
-        _okCity = self.myCompany.city != ""
-        _okCountry = self.myCompany.country != ""
-        _okMail = self.myCompany.mail != ""
-        _okPhone = self.myCompany.phone != ""
-        _okBank = self.myCompany.bank != ""
-        _okIban = self.myCompany.iban != ""
-        _okBic = self.myCompany.bic != ""
-
-        _ok = _okCompany and _okAddress and _okPostcode and _okCity and _okCity and _okCompany and _okMail and _okPhone and _okBank and _okIban and _okBic
+        _ok = self.myCompany.isDataOk() and self.myCustomer.isDataOk()
         return _ok
 
     def _doCreateInvoice(self):
         print("Create Tex File with Input Data")
-
+        # Here I should have all valid data
+        # Company
+        print(self.myCompany.company)
+        print(self.myCompany.address)
+        print(self.myCompany.postcode)
+        print(self.myCompany.city)
+        print(self.myCompany.country)
+        print(self.myCompany.mail)
+        print(self.myCompany.phone)
+        print(self.myCompany.bank)
+        print(self.myCompany.iban)
+        print(self.myCompany.bic)
+        # Customer
+        print(self.myCustomer.choose)
+        print(self.myCustomer.company)
+        print(self.myCustomer.name1)
+        print(self.myCustomer.name2)
+        print(self.myCustomer.address)
+        print(self.myCustomer.postcode)
+        print(self.myCustomer.city)
+        print(self.myCustomer.country)
+        # Invoice
+        self.myInvoice.calculateTotalPrice()
 
     def createInvoice(self, choosedCustomer=""):
         _save = self._isAllDataOk()
@@ -129,8 +122,33 @@ class Customer():
         self.city = city
         self.country = country
 
-        self.name = self.name2 + ", " + self.name1
-        self.choose = self.name + " - " + self.company + " - " + self.city + " (" + str(self.id) + ")"
+    def createChooseName(self):
+        _name = ""
+        if self.name1 != "" and self.name2 != "":
+            _name = self.name2 + ", " + self.name1 + " - " 
+        _company = ""
+        if self.company != "":
+            _company = self.company + " - " 
+        
+        self.choose = _name + _company + self.city + " (" + str(self.id) + ")"
+
+    def isDataOk(self):
+        _ok = False
+        _okName = (
+            self.company != "" or (self.name1 != "" and self.name2 != "")
+            #self.company == "" and (self.name1 != "" and self.name2 != "")
+            #or 
+            #self.company != "" and (self.name1 == "" and self.name2 == "")
+            #or
+            #self.company != "" and (self.name1 != "" and self.name2 != "")
+        )
+        _okAddress = self.address != ""
+        _okPostcode = self.postcode != ""
+        _okCity = self.city != ""
+
+        _ok = _okName and _okAddress and _okPostcode and _okCity
+        print("Customer data: " + str(_ok))
+        return _ok
 
 class Company():
     def __init__(self, company="", address="", postcode="", city="", country="", mail="", phone="", bank="", iban="", bic=""):
@@ -144,3 +162,109 @@ class Company():
         self.bank = bank
         self.iban = iban
         self.bic = bic
+    
+    def isDataOk(self):
+        _ok = False
+        _okCompany = self.company != ""
+        _okAddress = self.address != ""
+        _okPostcode = self.postcode != ""
+        _okCity = self.city != ""
+        _okCountry = self.country != ""
+        _okMail = self.mail != ""
+        _okPhone = self.phone != ""
+        _okBank = self.bank != ""
+        _okIban = self.iban != ""
+        _okBic = self.bic != ""
+
+        _ok = _okCompany and _okAddress and _okPostcode and _okCity and _okCity and _okCompany and _okMail and _okPhone and _okBank and _okIban and _okBic
+        print("Company data: " + str(_ok))
+        return _ok
+
+class Invoice():
+    def __init__(self, number=0):
+        self.number = int(number)
+        self.invoiceList = []
+        self.totalPrice = 0
+
+        self.addNewInvoicePart()
+
+    def addNewInvoicePart(self):
+        self.invoiceList.append(self.Part())
+
+    def calculateTotalPrice(self):
+        self.totalPrice = 0
+        for _invoice_part in self.invoiceList:
+            _invoice_part.calculate()
+            self.totalPrice += _invoice_part.total_unit_price
+
+        print("Total Price: " + str(self.totalPrice))
+            
+    class Part():
+        def __init__(self, quantity="", unit="", description="", unit_price=""):
+            self.quantity = quantity
+            self.unit = unit
+            self.description = description
+            self.unit_price = unit_price
+            self.total_unit_price = 0
+
+            self.valid = True
+
+        def calculate(self):
+            self.total_unit_price = 0
+            if self.isEmpty():
+                return
+            try:
+                self.total_unit_price = float(self.quantity) * float(self.unit_price)
+            except Exception as ex:
+                print(ex)
+                self.valid = False
+
+        def isEmpty(self):
+            _empty = True
+            _empty = _empty and self.quantity == ""
+            _empty = _empty and self.unit == ""
+            _empty = _empty and self.description == ""
+            _empty = _empty and self.unit_price == "" 
+            return _empty
+
+class InitialFile():
+    def __init__(self, path):
+        self.path = path
+
+        self.initialPath = ""
+        self.logo = ""
+        self.company = ""
+        self.number = ""
+        self.savePath = ""
+        self.customers = ""
+
+    def load(self):
+        with open(self.path, 'r') as file:
+            for line in file:
+                print("Read line")
+
+    def save(self):
+        with open(self.path, 'w') as file:
+
+            print("Write file")
+
+    def _generateAllData(self):
+        self._generateInitialPath()
+        self._generateLogo()
+        self._generateCompany()
+        self._generateNumber()
+        self._generateSavePath()
+        self._generateCustomers()
+
+    def _generateInitialPath(self):
+        self.initialPath = "# Ini Datei Pfad\n"
+    def _generateLogo(self):
+        self.logo = "# Logo\n"
+    def _generateCompany(self):
+        self.company = "# Firma\n"
+    def _generateNumber(self):
+        self.number = "# Letzte Rechnungsnummer\n"
+    def _generateSavePath(self):
+        self.savePath = "# Speicherort der Rechnungen\n"
+    def _generateCustomers(self):
+        self.customers = "# Kunden\n"

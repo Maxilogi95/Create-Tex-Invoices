@@ -46,7 +46,7 @@ class Customer(LabelFrame):
         maxColCount = 3
         # Customer - Labels + Comboboxes 
         self.lblChoose = Label(self, text="Kunde auswählen:")
-        self.choose = ttk.Combobox(self, width=60, values=['','Kohler, Maximilian - Trochtelfingen (0)'], state='readonly')
+        self.choose = ttk.Combobox(self, width=60, state='readonly')
         self.lblChoose.grid(row=start_row, column=0, sticky='w')
         start_row += 1
         self.choose.grid(row=start_row, column=0, sticky='w', columnspan=maxColCount, padx=1)
@@ -175,15 +175,17 @@ class Company(LabelFrame):
 class Invoice(LabelFrame):
     def __init__(self):
         LabelFrame.__init__(self, text="Rechnungsdaten")
+        self.partList = []
+
         self.row = 0
 
-        self.lblInvoiceNumber = Label(self, text="Rechnungsnummer:")
-        self.invoiceNumber = Spinbox(self, from_=0, to=1000000, wrap=True, increment=1)
-        self.btnAdd = Button(self, text="+", width=2, command=lambda:self.addLine())
+        self.lblNumber = Label(self, text="Rechnungsnummer:")
+        self.number = Spinbox(self, from_=0, to=1000000, wrap=True, increment=1)
+        self.btnAdd = Button(self, text="+", width=2)
 
-        self.lblInvoiceNumber.grid(row=self.row, column=0, sticky='w')
+        self.lblNumber.grid(row=self.row, column=0, sticky='w')
         self.row += 1
-        self.invoiceNumber.grid(row=self.row, column=0, sticky='w')
+        self.number.grid(row=self.row, column=0, sticky='w')
         self.btnAdd.grid(row=self.row, column=9, sticky='e')
         self.row += 1
 
@@ -205,46 +207,59 @@ class Invoice(LabelFrame):
 
         self.row = 0
 
-        self.lblInvoiceQuantity = Label(self.canvasFrame, text="Menge:")
-        self.lblInvoiceUnit = Label(self.canvasFrame, text="Einheit:")
-        self.lblInvoiceDescription = Label(self.canvasFrame, text="Beschreibung:")
-        self.lblInvoicePricePerUnit = Label(self.canvasFrame, text="Stückpreis:")
+        self.lblQuantity = Label(self.canvasFrame, text="Menge:")
+        self.lblUnit = Label(self.canvasFrame, text="Einheit:")
+        self.lblDescription = Label(self.canvasFrame, text="Beschreibung:")
+        self.lblPricePerUnit = Label(self.canvasFrame, text="Stückpreis:")
 
-        self.lblInvoiceQuantity.grid(row=self.row, column=0, sticky='w')
-        self.lblInvoiceUnit.grid(row=self.row, column=1, sticky='w')
-        self.lblInvoiceDescription.grid(row=self.row, column=2, columnspan=2, sticky='w')
-        self.lblInvoicePricePerUnit.grid(row=self.row, column=4, sticky='w')
+        self.lblQuantity.grid(row=self.row, column=0, sticky='w')
+        self.lblUnit.grid(row=self.row, column=1, sticky='w')
+        self.lblDescription.grid(row=self.row, column=2, columnspan=2, sticky='w')
+        self.lblPricePerUnit.grid(row=self.row, column=4, sticky='w')
         self.row += 1
 
-        self.addLine()
+        self.addPart()
 
     def scrollregion(self):
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
         self.canvas.yview_moveto(1)
 
-    def addLine(self):
-        print("Add line")
-        self.invoiceQuantity = Spinbox(self.canvasFrame, from_=0000, to=1000, wrap=True, increment=1)
-        self.invoiceUnit = Entry(self.canvasFrame, width=30)
-        self.invoiceDescription = Entry(self.canvasFrame, width=60)
-        self.invoicePricePerUnit = Entry(self.canvasFrame, width=30)
+    def addPart(self):
+        self.partList.append(self.Part(self))
 
-        self.invoiceQuantity.grid(row=self.row, column=0, sticky='w')
-        self.invoiceUnit.grid(row=self.row, column=1, sticky='w')
-        self.invoiceDescription.grid(row=self.row, column=2, columnspan=2, sticky='w')
-        self.invoicePricePerUnit.grid(row=self.row, column=4, sticky='w')
-        self.row += 1
+    class Part():
+        def __init__(self, root):
+            self.root = root
+            self.quantity = None
+            self.unit = None
+            self.description = None
+            self.pricePerUnit = None
+
+            self.addLine()
+
+        def addLine(self):
+            print("Add line")
+            self.quantity = Entry(self.root.canvasFrame)
+            self.unit = Entry(self.root.canvasFrame, width=30)
+            self.description = Entry(self.root.canvasFrame, width=60)
+            self.pricePerUnit = Entry(self.root.canvasFrame, width=30)
+
+            self.quantity.grid(row=self.root.row, column=0, sticky='w')
+            self.unit.grid(row=self.root.row, column=1, sticky='w')
+            self.description.grid(row=self.root.row, column=2, columnspan=2, sticky='w')
+            self.pricePerUnit.grid(row=self.root.row, column=4, sticky='w')
+            self.root.row += 1
         
         # self.invoiceTotalPriceUnit = Entry(self, width=30)
         # self.invoiceTotalPrice = Entry(self, width=30)
 
-    def clear(self):
-        self.invoiceQuantity.delete(0, 'end')
-        self.invoiceUnit.delete(0, 'end')
-        self.invoiceDescription.delete(0, 'end')
-        self.invoicePricePerUnit.delete(0, 'end')
-        # self.invoiceTotalPriceUnit.delete(0, 'end')
-        self.invoiceUnit.delete(0, 'end')
+        def clear(self):
+            self.quantity.delete(0, 'end')
+            self.unit.delete(0, 'end')
+            self.description.delete(0, 'end')
+            self.pricePerUnit.delete(0, 'end')
+            # self.invoiceTotalPriceUnit.delete(0, 'end')
+            self.unit.delete(0, 'end')
 
 
-View().mainloop()
+# View().mainloop()
