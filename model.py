@@ -1,3 +1,5 @@
+import json
+
 class Model():
     def __init__(self):
         print("Model Init")
@@ -231,40 +233,126 @@ class InitialFile():
     def __init__(self, path):
         self.path = path
 
-        self.initialPath = ""
         self.logo = ""
         self.company = ""
         self.number = ""
         self.savePath = ""
         self.customers = ""
 
+        # Data for Customer/Company/Invoice
+        self.initCompany = Company()
+        self.initCustomerList = []
+        self.initInvoiceNumber = 0
+
     def load(self):
+        _tmp = ""
+        _flagLogo = False
+        _flagCompany = False
+        _flagNumber = False
+        _flagPath = False
+        _flagCustomer = False
+
+        _iniLine = ["Logo_File_Path=", "Company=", "Number=", "Invoice_Path=", "Customers="]
+        _iniFlags = [_flagLogo, _flagCompany, _flagNumber, _flagPath, _flagCustomer]
+        _iniData = [self.logo, self.company, self.number, self.path, self.customers]
+
+        _iniLength = len(_iniLine)
+
         with open(self.path, 'r') as file:
             for line in file:
-                print("Read line")
+                if line.find('#') == 0 or line.find('\n') == 0:
+                    continue
+
+                for i in range(_iniLength):
+                    if line.find(_iniLine[i]) or _iniFlags[i]:
+                        if not _iniFlags[i]:
+                            _iniData[i] += line[len(_iniLine[i]):].replace('\n', '').replace(';', '')
+                        else:
+                            _iniData[i] += line.replace('\n', '').replace(';', '')
+                        _iniFlags[i] = True
+                '''
+                if line.find("Logo_File_Path=") >= 0 or _flagLogo:
+                    if not _flagLogo:
+                        self.logo += line[len("Logo_File_Path="):].replace('\n', '')
+                    else:
+                        self.logo += line.replace('\n', '')
+                    print("Logo File Path")
+                    _flagLogo = True
+                elif line.find("Company=") >= 0 or _flagCompany:
+                    _flagCompany = True
+                    print("Company")
+                elif line.find("Number=") >= 0 or _flagNumber:
+                    _flagNumber = True
+                    print("Number")
+                elif line.find("Invoice_Path=") >= 0 or _flagPath:
+                    _flagPath = True
+                    print("Invoice Path")
+                elif line.find("Customers=") >= 0 or _flagCustomer:
+                    _flagCustomer = True
+                    print("Customers")
+                '''
+                if line.find(';') == 0:
+                    _flagLogo = False
+                    _flagCompany = False
+                    _flagNumber = False
+                    _flagPath = False
+                    _flagCustomer = False
+
 
     def save(self):
+        self._generateAllIniData()
         with open(self.path, 'w') as file:
+            file.write(self.logo + self.company + self.number + self.savePath + self.customers)
 
-            print("Write file")
-
-    def _generateAllData(self):
-        self._generateInitialPath()
+    def _generateAllIniData(self):
         self._generateLogo()
         self._generateCompany()
         self._generateNumber()
         self._generateSavePath()
         self._generateCustomers()
 
-    def _generateInitialPath(self):
-        self.initialPath = "# Ini Datei Pfad\n"
     def _generateLogo(self):
-        self.logo = "# Logo\n"
+        self.logo = "# Logo\n" + self.logo + ";\n"
     def _generateCompany(self):
-        self.company = "# Firma\n"
+        self.company = "# Firma\n" + self.company + ";\n"
     def _generateNumber(self):
-        self.number = "# Letzte Rechnungsnummer\n"
+        self.number = "# Letzte Rechnungsnummer\n" + self.number + ";\n"
     def _generateSavePath(self):
-        self.savePath = "# Speicherort der Rechnungen\n"
+        self.savePath = "# Speicherort der Rechnungen\n" + self.savePath + ";\n"
     def _generateCustomers(self):
-        self.customers = "# Kunden\n"
+        self.customers = "# Kunden\n" + self.customers + ";\n"
+
+    def getInitCompanyData(self):
+        _companyDict = json.loads(self.company)
+
+        self.initCompany.company = _companyDict['name']
+        self.initCompany.address = _companyDict['street']
+        self.initCompany.postcode = _companyDict['postcode']
+        self.initCompany.city = _companyDict['city']
+        self.initCompany.country = _companyDict['country']
+        self.initCompany.mail = _companyDict['mail']
+        self.initCompany.phone = _companyDict['phone']
+        self.initCompany.iban = _companyDict['iban']
+        self.initCompany.bic = _companyDict['bic']
+
+        return self.initCompany
+
+    def getInitCustomerDataList(self):
+        _customerList = json.loads(self.customers)
+        for _customerDict in _customerList:
+            _customer = Customer()
+            _customer.id = _customerDict['id']
+            _customer.company = _customerDict['company']
+            _customer.name1 = _customerDict['name1']
+            _customer.name2 = _customerDict['name2']
+            _customer.address = _customerDict['street']
+            _customer.postcode = _customerDict['postcode']
+            _customer.city = _customerDict['city']
+            _customer.country = _customerDict['country']
+
+            self.initCustomerList.append(_customer)
+        
+        return self.initCustomerList
+
+    def getInitInvoiceData(self):
+        return self.initInvoiceNumber
