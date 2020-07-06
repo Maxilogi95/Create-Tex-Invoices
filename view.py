@@ -33,11 +33,8 @@ class View(Tk):
         #-----------------------------------------------------------
         self.btnCreate = Button(self, text="Create", width=8)
         self.btnCreate.grid(row=20, column=0)
-        self.btnClose = Button(self, text="Close", width=8, command=self._quit)
+        self.btnClose = Button(self, text="Close", width=8)
         self.btnClose.grid(row=20, column=3)
-
-    def _quit(self):
-        self.destroy()
 
 class Customer(LabelFrame):
     def __init__(self):

@@ -4,7 +4,6 @@ import model
 class Controller():
     def __init__(self):
         # Initial Data
-        self._getInitialData()
         self._setInitialView()
 
         # Objects
@@ -12,14 +11,27 @@ class Controller():
         self.gui = view.View()
 
         # Update
+        self._updateInitialView()
         self._updateData()
 
         # GUI
         self._configView()
         self.gui.mainloop()
 
-    def _getInitialData(self):
+    def _updateInitialView(self):
         print("Read Init File")
+        self.gui.myCustomer.choose['values'] = self.model.chooseCustomerList
+
+        self.gui.myCompany.name.insert(0, self.model.myCompany.company)
+        self.gui.myCompany.street.insert(0, self.model.myCompany.address)
+        self.gui.myCompany.postcode.insert(0, self.model.myCompany.postcode)
+        self.gui.myCompany.city.insert(0, self.model.myCompany.city)
+        self.gui.myCompany.country.insert(0, self.model.myCompany.country)
+        self.gui.myCompany.mail.insert(0, self.model.myCompany.mail)
+        self.gui.myCompany.phone.insert(0, self.model.myCompany.phone)
+        self.gui.myCompany.bank.insert(0, self.model.myCompany.bank)
+        self.gui.myCompany.iban.insert(0, self.model.myCompany.iban)
+        self.gui.myCompany.bic.insert(0, self.model.myCompany.bic)
 
     def _writeInitFile(self):
         print("Write Init File")
@@ -47,7 +59,7 @@ class Controller():
         self.model.myCustomer.country = self.gui.myCustomer.country.get()
 
     def _updateInvoiceData(self):
-        self.model.myInvoice.number = self.gui.myInvoice.number
+        self.model.myInvoice.number = self.gui.myInvoice.number.get()
         _i = 0
         for _part in self.gui.myInvoice.partList:
             self.model.myInvoice.invoiceList[_i].quantity = _part.quantity.get()
@@ -76,6 +88,7 @@ class Controller():
             self.model.myInvoice.addNewInvoicePart()
             ))
         self.gui.myCustomer.choose.config(values=[''])
+        self.gui.btnClose.config(command=self.quit)
 
     def changeCustomer(self):
         print("Change customer")
@@ -90,5 +103,9 @@ class Controller():
         if not _created:
             return
         self._writeInitFile()
+
+    def quit(self):
+        self.model.myIni.saveAllData(self.model.myCompany, self.model.myCustomerList, self.model.myInvoice)
+        self.gui.destroy()
 
 Controller()

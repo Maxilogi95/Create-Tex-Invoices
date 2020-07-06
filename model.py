@@ -1,13 +1,15 @@
+import configparser
 import json
 
 class Model():
     def __init__(self):
         print("Model Init")
-        self.path = ""
+        self.path = "Invoices.ini"
+        self.myIni = InitialFile(path=self.path)
+        self.myCompany = self.myIni.initCompany
+        self.myInvoice = self.myIni.initInvoice
+        self.myCustomerList = self.myIni.initCustomerList
         self.myCustomer = Customer()
-        self.myCompany = Company()
-        self.myInvoice = Invoice()
-        self.myCustomerList = []
         self.chooseCustomerList = []
 
         self.msg = ""
@@ -33,6 +35,7 @@ class Model():
             
             if str(self.myCustomer.id) == str(_id):
                 self.myCustomer = myCustomer
+                return
 
     def _isAllDataOk(self):
         _ok = False
@@ -183,8 +186,9 @@ class Company():
         return _ok
 
 class Invoice():
-    def __init__(self, number=0):
+    def __init__(self, number=0, path=""):
         self.number = int(number)
+        self.path = path
         self.invoiceList = []
         self.totalPrice = 0
 
@@ -230,129 +234,112 @@ class Invoice():
             return _empty
 
 class InitialFile():
-    def __init__(self, path):
+    def __init__(self, path="Invoices.ini"):
         self.path = path
+        self.config = configparser.ConfigParser()
+        self.config.read(self.path)
 
         self.logo = ""
-        self.company = ""
-        self.number = ""
-        self.savePath = ""
-        self.customers = ""
 
         # Data for Customer/Company/Invoice
         self.initCompany = Company()
         self.initCustomerList = []
-        self.initInvoiceNumber = 0
+        self.initInvoice = Invoice()
 
-    def load(self):
-        _tmp = ""
-        _flagLogo = False
-        _flagCompany = False
-        _flagNumber = False
-        _flagPath = False
-        _flagCustomer = False
+        self.getAllData()
 
-        _iniLine = ["Logo_File_Path=", "Company=", "Number=", "Invoice_Path=", "Customers="]
-        _iniFlags = [_flagLogo, _flagCompany, _flagNumber, _flagPath, _flagCustomer]
-        _iniData = [self.logo, self.company, self.number, self.path, self.customers]
+    def getAllData(self):
+        self.getCompanyData()
+        self.getInvoiceData()
+        self.getCustomerData()
 
-        _iniLength = len(_iniLine)
+    def getCompanyData(self):
+        try:
+            self.logo = self.config.get('Company', 'Logo')
+            self.initCompany.company = self.config.get('Company', 'Name')
+            self.initCompany.address = self.config.get('Company', 'Street')
+            self.initCompany.postcode = self.config.get('Company', 'Postcode')
+            self.initCompany.city = self.config.get('Company', 'City')
+            self.initCompany.country = self.config.get('Company', 'Country')
+            self.initCompany.mail = self.config.get('Company', 'Mail')
+            self.initCompany.phone = self.config.get('Company', 'Phone')
+            self.initCompany.bank = self.config.get('Company', 'Bank')
+            self.initCompany.iban = self.config.get('Company', 'Iban')
+            self.initCompany.bic = self.config.get('Company', 'Bic')
+        except Exception as ex:
+            print(ex)
+            return
 
-        with open(self.path, 'r') as file:
-            for line in file:
-                if line.find('#') == 0 or line.find('\n') == 0:
-                    continue
+    def getInvoiceData(self):
+        try:
+            self.initInvoice.number = self.config.get('Invoice', 'Number')
+            self.initInvoice.path = self.config.get('Invoice', 'Path')
+        except Exception as ex:
+            print(ex)
+            return
 
-                for i in range(_iniLength):
-                    if line.find(_iniLine[i]) or _iniFlags[i]:
-                        if not _iniFlags[i]:
-                            _iniData[i] += line[len(_iniLine[i]):].replace('\n', '').replace(';', '')
-                        else:
-                            _iniData[i] += line.replace('\n', '').replace(';', '')
-                        _iniFlags[i] = True
-                '''
-                if line.find("Logo_File_Path=") >= 0 or _flagLogo:
-                    if not _flagLogo:
-                        self.logo += line[len("Logo_File_Path="):].replace('\n', '')
-                    else:
-                        self.logo += line.replace('\n', '')
-                    print("Logo File Path")
-                    _flagLogo = True
-                elif line.find("Company=") >= 0 or _flagCompany:
-                    _flagCompany = True
-                    print("Company")
-                elif line.find("Number=") >= 0 or _flagNumber:
-                    _flagNumber = True
-                    print("Number")
-                elif line.find("Invoice_Path=") >= 0 or _flagPath:
-                    _flagPath = True
-                    print("Invoice Path")
-                elif line.find("Customers=") >= 0 or _flagCustomer:
-                    _flagCustomer = True
-                    print("Customers")
-                '''
-                if line.find(';') == 0:
-                    _flagLogo = False
-                    _flagCompany = False
-                    _flagNumber = False
-                    _flagPath = False
-                    _flagCustomer = False
+    def getCustomerData(self):
+        try:
+            _sections = self.config.sections()
+            _customerSections = []
+            for _section in _sections:
+                if "Customer" in _section:
+                    _customerSections.append(_section)
 
+            for _section in _customerSections:
+                _customer = Customer()
+                _customer.id = self.config.get(_section, 'Id')
+                _customer.company = self.config.get(_section, 'Company')
+                _customer.name1 = self.config.get(_section, 'FirstName')
+                _customer.name2 = self.config.get(_section, 'LastName')
+                _customer.address = self.config.get(_section, 'Street')
+                _customer.postcode = self.config.get(_section, 'Postcode')
+                _customer.city = self.config.get(_section, 'City')
+                _customer.country = self.config.get(_section, 'Country')
 
-    def save(self):
-        self._generateAllIniData()
-        with open(self.path, 'w') as file:
-            file.write(self.logo + self.company + self.number + self.savePath + self.customers)
+                self.initCustomerList.append(_customer)
+        except Exception as ex:
+            print(ex)
+            return
 
-    def _generateAllIniData(self):
-        self._generateLogo()
-        self._generateCompany()
-        self._generateNumber()
-        self._generateSavePath()
-        self._generateCustomers()
+    def saveAllData(self, company, customerList, invoice=None):
+        self.setCompanyData(company)
+        self.setInvoiceData(invoice)
+        self.setCustomerData(customerList)
 
-    def _generateLogo(self):
-        self.logo = "# Logo\n" + self.logo + ";\n"
-    def _generateCompany(self):
-        self.company = "# Firma\n" + self.company + ";\n"
-    def _generateNumber(self):
-        self.number = "# Letzte Rechnungsnummer\n" + self.number + ";\n"
-    def _generateSavePath(self):
-        self.savePath = "# Speicherort der Rechnungen\n" + self.savePath + ";\n"
-    def _generateCustomers(self):
-        self.customers = "# Kunden\n" + self.customers + ";\n"
+        with open(self.path, 'w') as iniFile:
+            self.config.write(iniFile)
 
-    def getInitCompanyData(self):
-        _companyDict = json.loads(self.company)
+    def setCompanyData(self, company):
+        self.config['Company'] = {
+            'Logo' : self.logo,
+            'Name' : company.company,
+            'Street' : company.address,
+            'Postcode' : company.postcode,
+            'City' : company.city,
+            'Country' : company.country,
+            'Mail' : company.mail,
+            'Phone' : company.phone,
+            'Bank' : company.bank,
+            'Iban' : company.iban,
+            'Bic' : company.bic
+        }
 
-        self.initCompany.company = _companyDict['name']
-        self.initCompany.address = _companyDict['street']
-        self.initCompany.postcode = _companyDict['postcode']
-        self.initCompany.city = _companyDict['city']
-        self.initCompany.country = _companyDict['country']
-        self.initCompany.mail = _companyDict['mail']
-        self.initCompany.phone = _companyDict['phone']
-        self.initCompany.iban = _companyDict['iban']
-        self.initCompany.bic = _companyDict['bic']
+    def setInvoiceData(self, invoice):
+        self.config['Invoice'] = {
+            'Number' : invoice.number,
+            'Path' : invoice.path
+        }
 
-        return self.initCompany
-
-    def getInitCustomerDataList(self):
-        _customerList = json.loads(self.customers)
-        for _customerDict in _customerList:
-            _customer = Customer()
-            _customer.id = _customerDict['id']
-            _customer.company = _customerDict['company']
-            _customer.name1 = _customerDict['name1']
-            _customer.name2 = _customerDict['name2']
-            _customer.address = _customerDict['street']
-            _customer.postcode = _customerDict['postcode']
-            _customer.city = _customerDict['city']
-            _customer.country = _customerDict['country']
-
-            self.initCustomerList.append(_customer)
-        
-        return self.initCustomerList
-
-    def getInitInvoiceData(self):
-        return self.initInvoiceNumber
+    def setCustomerData(self, customerList):
+        for customer in customerList:
+            self.config['Customer' + str(customer.id)] = {
+                'Id' : customer.id,
+                'Company' : customer.company,
+                'FirstName' : customer.name1,
+                'LastName' : customer.name2,
+                'Street' : customer.address,
+                'Postcode' : customer.postcode,
+                'City' : customer.city,
+                'Country' : customer.country
+            }
