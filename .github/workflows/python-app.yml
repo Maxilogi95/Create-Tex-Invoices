@@ -33,6 +33,3 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
         # Benchmark: number of tokens, physical lines, logical lines and files
         flake8 --benchmark --exit-zero --statistics
-    - name: Test with pytest
-      run: |
-        pytest model.py
