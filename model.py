@@ -9,8 +9,9 @@ class Model():
         self.myCompany = self.myIni.initCompany
         self.myInvoice = self.myIni.initInvoice
         self.myCustomerList = self.myIni.initCustomerList
+        self.chooseCustomerList = self.myIni.initChooseCustomerList
         self.myCustomer = Customer()
-        self.chooseCustomerList = []
+        
 
         self.msg = ""
         self.msgTitle = ""
@@ -20,9 +21,13 @@ class Model():
         return _new
 
     def _addCustomer(self):
+        self.myCustomer.id = len(self.myCustomerList) + 1
+        self.myCustomer.createChooseName()
         self.myCustomerList.append(self.myCustomer)
+        self.createChooseCustomerList()
 
-    def _createChooseCustomerList(self):
+    def createChooseCustomerList(self):
+        self.chooseCustomerList = ['']
         for myCustomer in self.myCustomerList:
             self.chooseCustomerList.append(myCustomer.choose)
 
@@ -31,9 +36,9 @@ class Model():
             return
 
         for myCustomer in self.myCustomerList:
-            _id = myCustomer.choose[myCustomer.choose.find("(")+1 : myCustomer.choose.find(")")]
-            
-            if str(self.myCustomer.id) == str(_id):
+            _id = choosedCustomer[choosedCustomer.find("(")+1 : choosedCustomer.find(")")]
+            print("Compare: " + str(myCustomer.id) + "==" + str(_id))
+            if str(myCustomer.id) == str(_id):
                 self.myCustomer = myCustomer
                 return
 
@@ -77,6 +82,7 @@ class Model():
 
         if self._isNewCustomer(choosedCustomer):
             self._addCustomer()
+            self.myIni.saveAllData(self.myCompany, self.myCustomerList, self.myInvoice)
 
         self._doCreateInvoice()
 
@@ -126,6 +132,8 @@ class Customer():
         self.postcode = postcode
         self.city = city
         self.country = country
+
+        self.createChooseName()
 
     def createChooseName(self):
         _name = ""
@@ -244,6 +252,7 @@ class InitialFile():
         # Data for Customer/Company/Invoice
         self.initCompany = Company()
         self.initCustomerList = []
+        self.initChooseCustomerList = []
         self.initInvoice = Invoice()
 
         self.getAllData()
@@ -296,7 +305,9 @@ class InitialFile():
                 _customer.postcode = self.config.get(_section, 'Postcode')
                 _customer.city = self.config.get(_section, 'City')
                 _customer.country = self.config.get(_section, 'Country')
+                _customer.createChooseName()
 
+                self.initChooseCustomerList.append(_customer.choose)
                 self.initCustomerList.append(_customer)
         except Exception as ex:
             print(ex)

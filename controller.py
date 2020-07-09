@@ -3,22 +3,19 @@ import model
 
 class Controller():
     def __init__(self):
-        # Initial Data
-        self._setInitialView()
-
         # Objects
         self.model = model.Model()
         self.gui = view.View()
 
         # Update
-        self._updateInitialView()
+        self._setInitialView()
         self._updateData()
 
         # GUI
         self._configView()
         self.gui.mainloop()
 
-    def _updateInitialView(self):
+    def _setInitialView(self):
         print("Read Init File")
         self.gui.myCustomer.choose['values'] = self.model.chooseCustomerList
 
@@ -32,6 +29,25 @@ class Controller():
         self.gui.myCompany.bank.insert(0, self.model.myCompany.bank)
         self.gui.myCompany.iban.insert(0, self.model.myCompany.iban)
         self.gui.myCompany.bic.insert(0, self.model.myCompany.bic)
+
+    def chooseCustomer(self):
+        print("Choose Customer?")
+        self.gui.myCustomer.company.delete(0, 'end')
+        self.gui.myCustomer.name1.delete(0, 'end')
+        self.gui.myCustomer.name2.delete(0, 'end')
+        self.gui.myCustomer.street.delete(0, 'end')
+        self.gui.myCustomer.postcode.delete(0, 'end')
+        self.gui.myCustomer.city.delete(0, 'end')
+        self.gui.myCustomer.country.delete(0, 'end')
+
+        if self.gui.myCustomer.choose.get() != "":
+            self.gui.myCustomer.company.insert(0, self.model.myCustomer.company)
+            self.gui.myCustomer.name1.insert(0, self.model.myCustomer.name1)
+            self.gui.myCustomer.name2.insert(0, self.model.myCustomer.name2)
+            self.gui.myCustomer.street.insert(0, self.model.myCustomer.address)
+            self.gui.myCustomer.postcode.insert(0, self.model.myCustomer.postcode)
+            self.gui.myCustomer.city.insert(0, self.model.myCustomer.city)
+            self.gui.myCustomer.country.insert(0, self.model.myCustomer.country)
 
     def _writeInitFile(self):
         print("Write Init File")
@@ -58,6 +74,9 @@ class Controller():
         self.model.myCustomer.city = self.gui.myCustomer.city.get()
         self.model.myCustomer.country = self.gui.myCustomer.country.get()
 
+        self.model.createChooseCustomerList()
+        self.gui.myCustomer.choose['values'] = self.model.chooseCustomerList
+
     def _updateInvoiceData(self):
         self.model.myInvoice.number = self.gui.myInvoice.number.get()
         _i = 0
@@ -73,12 +92,6 @@ class Controller():
         self._updateCompanyData()
         self._updateInvoiceData()
 
-        self.path = ""
-        self.number = 0
-
-    def _setInitialView(self):
-        print("Set View")
-
     def _configView(self):
         print("Config View")
         self.gui.btnCreate.config(command=self.createInvoice)
@@ -87,8 +100,11 @@ class Controller():
             self.gui.myInvoice.addPart(),
             self.model.myInvoice.addNewInvoicePart()
             ))
-        self.gui.myCustomer.choose.config(values=[''])
         self.gui.btnClose.config(command=self.quit)
+        self.gui.myCustomer.choose.bind('<<ComboboxSelected>>', lambda choose:(
+            self.model.chooseCustomer(self.gui.myCustomer.choose.get()),
+            self.chooseCustomer()
+            ))
 
     def changeCustomer(self):
         print("Change customer")
@@ -99,7 +115,9 @@ class Controller():
     def createInvoice(self):
         print("Create Invoice")
         self._updateData()
-        _created = self.model.createInvoice()
+        _created = self.model.createInvoice(self.gui.myCustomer.choose.get())
+        self.gui.myCustomer.choose.set(self.model.myCustomer.choose)
+        self.gui.myCustomer.choose['values'] = self.model.chooseCustomerList
         if not _created:
             return
         self._writeInitFile()
