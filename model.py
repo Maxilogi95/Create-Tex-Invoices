@@ -1,5 +1,5 @@
 import configparser
-import json
+
 
 class Model():
     def __init__(self):
@@ -11,7 +11,6 @@ class Model():
         self.myCustomerList = self.myIni.initCustomerList
         self.chooseCustomerList = self.myIni.initChooseCustomerList
         self.myCustomer = Customer()
-        
 
         self.msg = ""
         self.msgTitle = ""
@@ -36,7 +35,7 @@ class Model():
             return
 
         for myCustomer in self.myCustomerList:
-            _id = choosedCustomer[choosedCustomer.find("(")+1 : choosedCustomer.find(")")]
+            _id = choosedCustomer[choosedCustomer.find("(")+1:choosedCustomer.find(")")]
             print("Compare: " + str(myCustomer.id) + "==" + str(_id))
             if str(myCustomer.id) == str(_id):
                 self.myCustomer = myCustomer
@@ -122,6 +121,7 @@ class Model():
     def _getAllCustomerData(self):
         return ""
 
+
 class Customer():
     def __init__(self, id="", company="", name1="", name2="", address="", postcode="", city="", country=""):
         self.id = id
@@ -138,22 +138,17 @@ class Customer():
     def createChooseName(self):
         _name = ""
         if self.name1 != "" and self.name2 != "":
-            _name = self.name2 + ", " + self.name1 + " - " 
+            _name = self.name2 + ", " + self.name1 + " - "
         _company = ""
         if self.company != "":
-            _company = self.company + " - " 
-        
+            _company = self.company + " - "
+
         self.choose = _name + _company + self.city + " (" + str(self.id) + ")"
 
     def isDataOk(self):
         _ok = False
         _okName = (
             self.company != "" or (self.name1 != "" and self.name2 != "")
-            #self.company == "" and (self.name1 != "" and self.name2 != "")
-            #or 
-            #self.company != "" and (self.name1 == "" and self.name2 == "")
-            #or
-            #self.company != "" and (self.name1 != "" and self.name2 != "")
         )
         _okAddress = self.address != ""
         _okPostcode = self.postcode != ""
@@ -162,6 +157,7 @@ class Customer():
         _ok = _okName and _okAddress and _okPostcode and _okCity
         print("Customer data: " + str(_ok))
         return _ok
+
 
 class Company():
     def __init__(self, company="", address="", postcode="", city="", country="", mail="", phone="", bank="", iban="", bic=""):
@@ -175,7 +171,7 @@ class Company():
         self.bank = bank
         self.iban = iban
         self.bic = bic
-    
+
     def isDataOk(self):
         _ok = False
         _okCompany = self.company != ""
@@ -189,9 +185,10 @@ class Company():
         _okIban = self.iban != ""
         _okBic = self.bic != ""
 
-        _ok = _okCompany and _okAddress and _okPostcode and _okCity and _okCity and _okCompany and _okMail and _okPhone and _okBank and _okIban and _okBic
+        _ok = _okCompany and _okAddress and _okPostcode and _okCity and _okCountry and _okCompany and _okMail and _okPhone and _okBank and _okIban and _okBic
         print("Company data: " + str(_ok))
         return _ok
+
 
 class Invoice():
     def __init__(self, number=0, path=""):
@@ -212,7 +209,8 @@ class Invoice():
             self.totalPrice += _invoice_part.total_unit_price
 
         print("Total Price: " + str(self.totalPrice))
-            
+
+
     class Part():
         def __init__(self, quantity="", unit="", description="", unit_price=""):
             self.quantity = quantity
@@ -238,8 +236,9 @@ class Invoice():
             _empty = _empty and self.quantity == ""
             _empty = _empty and self.unit == ""
             _empty = _empty and self.description == ""
-            _empty = _empty and self.unit_price == "" 
+            _empty = _empty and self.unit_price == ""
             return _empty
+
 
 class InitialFile():
     def __init__(self, path="Invoices.ini"):
@@ -323,34 +322,34 @@ class InitialFile():
 
     def setCompanyData(self, company):
         self.config['Company'] = {
-            'Logo' : self.logo,
-            'Name' : company.company,
-            'Street' : company.address,
-            'Postcode' : company.postcode,
-            'City' : company.city,
-            'Country' : company.country,
-            'Mail' : company.mail,
-            'Phone' : company.phone,
-            'Bank' : company.bank,
-            'Iban' : company.iban,
-            'Bic' : company.bic
+            'Logo': self.logo,
+            'Name': company.company,
+            'Street': company.address,
+            'Postcode': company.postcode,
+            'City': company.city,
+            'Country': company.country,
+            'Mail': company.mail,
+            'Phone': company.phone,
+            'Bank': company.bank,
+            'Iban': company.iban,
+            'Bic': company.bic
         }
 
     def setInvoiceData(self, invoice):
         self.config['Invoice'] = {
-            'Number' : invoice.number,
-            'Path' : invoice.path
+            'Number': invoice.number,
+            'Path': invoice.path
         }
 
     def setCustomerData(self, customerList):
         for customer in customerList:
             self.config['Customer' + str(customer.id)] = {
-                'Id' : customer.id,
-                'Company' : customer.company,
-                'FirstName' : customer.name1,
-                'LastName' : customer.name2,
-                'Street' : customer.address,
-                'Postcode' : customer.postcode,
-                'City' : customer.city,
-                'Country' : customer.country
+                'Id': customer.id,
+                'Company': customer.company,
+                'FirstName': customer.name1,
+                'LastName': customer.name2,
+                'Street': customer.address,
+                'Postcode': customer.postcode,
+                'City': customer.city,
+                'Country': customer.country
             }

@@ -1,4 +1,4 @@
-from tkinter import *
+from tkinter import Entry, Label, Frame, LabelFrame, Button, Tk, Spinbox, Canvas, Scrollbar
 from tkinter import ttk
 from tkinter import messagebox
 
@@ -6,7 +6,7 @@ from tkinter import messagebox
 # Sort Combobox of custumers with radiobuttons (by number, name1, name2)
 # filter Combobox of custumers + reset filter and sort
 # Mindestgröße / Maximalgröße
-# onselect: cbox.bind("<<ComboboxSelected>>", function) change customer content
+
 class View(Tk):
     def __init__(self):
         Tk.__init__(self)
@@ -35,6 +35,7 @@ class View(Tk):
         self.btnCreate.grid(row=20, column=0)
         self.btnClose = Button(self, text="Close", width=8)
         self.btnClose.grid(row=20, column=3)
+
 
 class Customer(LabelFrame):
     def __init__(self):
@@ -96,6 +97,7 @@ class Customer(LabelFrame):
 
         self.btnChange = Button(self, text="Change", width=8)
         self.btnChange.grid(row=start_row, column=2, sticky='e')
+
 
 class Company(LabelFrame):
     def __init__(self):
@@ -169,6 +171,7 @@ class Company(LabelFrame):
         self.bic.grid(row=start_row, column=0, columnspan=maxColCount, sticky='w', padx=1)
         start_row += 1
 
+
 class Invoice(LabelFrame):
     def __init__(self):
         LabelFrame.__init__(self, text="Rechnungsdaten")
@@ -223,6 +226,7 @@ class Invoice(LabelFrame):
 
     def addPart(self):
         self.partList.append(self.Part(self))
+
 
     class Part():
         def __init__(self, root):

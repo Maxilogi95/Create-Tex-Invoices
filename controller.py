@@ -1,6 +1,7 @@
 import view
 import model
 
+
 class Controller():
     def __init__(self):
         # Objects
@@ -96,12 +97,12 @@ class Controller():
         print("Config View")
         self.gui.btnCreate.config(command=self.createInvoice)
         self.gui.myCustomer.btnChange.config(command=self.changeCustomer)
-        self.gui.myInvoice.btnAdd.config(command=lambda:(
+        self.gui.myInvoice.btnAdd.config(command=lambda: (
             self.gui.myInvoice.addPart(),
             self.model.myInvoice.addNewInvoicePart()
             ))
         self.gui.btnClose.config(command=self.quit)
-        self.gui.myCustomer.choose.bind('<<ComboboxSelected>>', lambda choose:(
+        self.gui.myCustomer.choose.bind('<<ComboboxSelected>>', lambda choose: (
             self.model.chooseCustomer(self.gui.myCustomer.choose.get()),
             self.chooseCustomer()
             ))
@@ -125,5 +126,6 @@ class Controller():
     def quit(self):
         self.model.myIni.saveAllData(self.model.myCompany, self.model.myCustomerList, self.model.myInvoice)
         self.gui.destroy()
+
 
 Controller()
