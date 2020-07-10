@@ -1,4 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import configparser
+import codecs
 
 
 class Model():
@@ -8,6 +12,7 @@ class Model():
         self.myIni = InitialFile(path=self.path)
         self.myCompany = self.myIni.initCompany
         self.myInvoice = self.myIni.initInvoice
+        self.myTex = InvoiceTex()
         self.myCustomerList = self.myIni.initCustomerList
         self.chooseCustomerList = self.myIni.initChooseCustomerList
         self.myCustomer = Customer()
@@ -84,6 +89,7 @@ class Model():
             self.myIni.saveAllData(self.myCompany, self.myCustomerList, self.myInvoice)
 
         self._doCreateInvoice()
+        self.myTex.create(self.myCompany, self.myCustomer, self.myInvoice)
 
         return _save
 
@@ -244,7 +250,7 @@ class InitialFile():
     def __init__(self, path="Invoices.ini"):
         self.path = path
         self.config = configparser.ConfigParser()
-        self.config.read(self.path)
+        self.config.read(self.path, encoding='utf-8')
 
         self.logo = ""
 
@@ -317,7 +323,7 @@ class InitialFile():
         self.setInvoiceData(invoice)
         self.setCustomerData(customerList)
 
-        with open(self.path, 'w') as iniFile:
+        with codecs.open(self.path, 'w','utf-8') as iniFile:
             self.config.write(iniFile)
 
     def setCompanyData(self, company):
@@ -353,3 +359,62 @@ class InitialFile():
                 'City': customer.city,
                 'Country': customer.country
             }
+
+
+class InvoiceTex():
+    def __init__(self, company=None, customer=None, invoice=None):
+        self.company = company
+        self.customer = customer
+        self.invoice = invoice
+        self.replaceDict = {}
+
+    def create(self, company=None, customer=None, invoice=None):
+        if self.company == None or self.customer == None or self.invoice == None:
+            self.company = company
+            self.customer = customer
+            self.invoice = invoice
+
+        self._fillData()
+        # with open('template.tex', 'r') as template:
+        #     _data = template.read()
+        template = codecs.open('template.tex','r','utf-8')
+        _data = template.read()
+        template.close()
+
+        for key in self.replaceDict.keys():
+            _data = _data.replace(key, str(self.replaceDict[key]))
+
+        with codecs.open(str(self.invoice.number) + '.tex','w','utf-8') as template:
+            template.write(_data)
+        #template.close()
+
+    def _fillData(self):
+        self.replaceDict = {
+            # Company Data
+            "<NAME>":       self.company.company,
+            "<STREET>":     self.company.address,
+            "<POSTCODE>":   self.company.postcode,
+            "<CITY>":       self.company.city,
+            "<PHONE>":      self.company.phone,
+            "<MAIL>":       self.company.mail,
+            "<IBAN>":       self.company.iban,
+            "<BIC>":        self.company.bic,
+            "<BANK>":       self.company.bank,
+            # Customer Data
+            "<CUSTOMERID>":         self.customer.id,
+            "<CUSTOMERCOMPANY>":    self.customer.company,
+            "<CUSTOMERNAME>":       self.customer.name1 + " " + self.customer.name2,
+            "<CUSTOMERSTREET>":     self.customer.address,
+            "<CUSTOMERPOSTCODE>":   self.customer.postcode,
+            "<CUSTOMERCITY>":       self.customer.city,
+            # Invoice Data
+            "<INVOICENO>":  self.invoice.number,
+            "<INVOICETITLE>": "",
+            "<INVOICEDATA>": self._generateInvoiceData(),
+            "<INVOICESUM>": self.invoice.totalPrice
+        }
+
+    def _generateInvoiceData(self):
+        for part in self.invoice.invoiceList:
+            print()
+        return ""

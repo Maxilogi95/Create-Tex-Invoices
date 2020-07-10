@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from tkinter import Entry, Label, Frame, LabelFrame, Button, Tk, Spinbox, Canvas, Scrollbar
 from tkinter import ttk
 from tkinter import messagebox
