@@ -34,8 +34,8 @@ class Controller():
         self.gui.myCompany.iban.insert(0, self.model.myCompany.iban)
         self.gui.myCompany.bic.insert(0, self.model.myCompany.bic)
 
-    def chooseCustomer(self):
-        print("Choose Customer?")
+    def onSelectCustomer(self):
+        self.gui.myCustomer.editable(True)
         self.gui.myCustomer.company.delete(0, 'end')
         self.gui.myCustomer.name1.delete(0, 'end')
         self.gui.myCustomer.name2.delete(0, 'end')
@@ -52,9 +52,7 @@ class Controller():
             self.gui.myCustomer.postcode.insert(0, self.model.myCustomer.postcode)
             self.gui.myCustomer.city.insert(0, self.model.myCustomer.city)
             self.gui.myCustomer.country.insert(0, self.model.myCustomer.country)
-
-    def _writeInitFile(self):
-        print("Write Init File")
+            self.gui.myCustomer.editable(False)
 
     def _updateCompanyData(self):
         self.model.myCompany.company = self.gui.myCompany.name.get()
@@ -99,35 +97,33 @@ class Controller():
     def _configView(self):
         print("Config View")
         self.gui.btnCreate.config(command=self.createInvoice)
-        self.gui.myCustomer.btnChange.config(command=self.changeCustomer)
+        self.gui.myCustomer.btnChange.config(command=self.gui.myCustomer.editable(True))
         self.gui.myInvoice.btnAdd.config(command=lambda: (
             self.gui.myInvoice.addPart(),
             self.model.myInvoice.addNewInvoicePart()
             ))
         self.gui.btnClose.config(command=self.quit)
         self.gui.myCustomer.choose.bind('<<ComboboxSelected>>', lambda choose: (
-            self.model.chooseCustomer(self.gui.myCustomer.choose.get()),
-            self.chooseCustomer()
-            ))
-
-    def changeCustomer(self):
-        print("Change customer")
-
-    def _deleteCustomer(self):
-        print("Delete customer not allowed")
+            self.model.onSelectCustomer(self.gui.myCustomer.choose.get()),
+            self.onSelectCustomer()
+            ))        
 
     def createInvoice(self):
-        print("Create Invoice")
+        # Get data from VIEW and set data in MODEL
         self._updateData()
+
+        # Create invoice with all updated data
         _created = self.model.createInvoice(self.gui.myCustomer.choose.get())
-        self.gui.myCustomer.choose.set(self.model.myCustomer.choose)
-        self.gui.myCustomer.choose['values'] = self.model.chooseCustomerList
+
         if not _created:
             return
-        self._writeInitFile()
+
+        # Update customer list in VIEW
+        self.gui.myCustomer.choose['values'] = self.model.chooseCustomerList
+        self.gui.myCustomer.choose.set(self.model.myCustomer.choose)
 
     def quit(self):
-        self.model.myIni.saveAllData(self.model.myCompany, self.model.myCustomerList, self.model.myInvoice)
+        # self.model.myIni.saveAllData(self.model.myCompany, self.model.myCustomerList, self.model.myInvoice)
         self.gui.destroy()
 
 

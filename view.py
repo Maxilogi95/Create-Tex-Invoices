@@ -101,6 +101,18 @@ class Customer(LabelFrame):
         self.btnChange = Button(self, text="Change", width=8)
         self.btnChange.grid(row=start_row, column=2, sticky='e')
 
+    def editable(self, enable=True):
+        state = "disabled"
+        if enable:
+            state = "normal"
+
+        self.company.config(state=state)
+        self.name1.config(state=state)
+        self.name2.config(state=state)
+        self.street.config(state=state)
+        self.postcode.config(state=state)
+        self.city.config(state=state)
+        self.country.config(state=state)
 
 class Company(LabelFrame):
     def __init__(self):
