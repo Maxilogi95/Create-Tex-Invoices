@@ -10,6 +10,7 @@ from tkinter import messagebox
 # filter Combobox of custumers + reset filter and sort
 # Mindestgröße / Maximalgröße
 
+
 class View(Tk):
     def __init__(self):
         Tk.__init__(self)
@@ -45,7 +46,7 @@ class Customer(LabelFrame):
         LabelFrame.__init__(self, text="Kunde")
         start_row = 0
         maxColCount = 3
-        # Customer - Labels + Comboboxes 
+        # Customer - Labels + Comboboxes
         self.lblChoose = Label(self, text="Kunde auswählen:")
         self.choose = ttk.Combobox(self, width=60, state='readonly')
         self.lblChoose.grid(row=start_row, column=0, sticky='w')
@@ -113,6 +114,7 @@ class Customer(LabelFrame):
         self.postcode.config(state=state)
         self.city.config(state=state)
         self.country.config(state=state)
+
 
 class Company(LabelFrame):
     def __init__(self):
@@ -218,7 +220,7 @@ class Invoice(LabelFrame):
         self.canvas.config(yscrollcommand=self.myScrollbar.set)
         self.myScrollbar.grid(row=0, column=1, sticky="nse")
 
-        self.canvasFrame.bind("<Configure>", lambda e:self.scrollregion())
+        self.canvasFrame.bind("<Configure>", lambda e: self.scrollregion())
 
         self.row = 0
 

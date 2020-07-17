@@ -47,6 +47,7 @@ class Model():
     def onSelectCustomer(self, choosedCustomer):
         self.myCustomer = self.myList.getSelectedCustomer(choosedCustomer)
 
+
 class List():
     """
     class List:
@@ -102,6 +103,7 @@ class List():
             _id = choosedCustomer[choosedCustomer.find("(")+1:choosedCustomer.find(")")]
             if str(customer.id) == str(_id):
                 return customer
+
 
 class Customer():
     def __init__(self, id="", company="", name1="", name2="", address="", postcode="", city="", country=""):
@@ -164,10 +166,12 @@ class Company():
         okIban = self.iban != ""
         okBic = self.bic != ""
 
-        ok = (okCompany and okAddress and okPostcode and 
+        ok = (
+            okCompany and okAddress and okPostcode and
             okCity and okCountry and okCompany and 
             okMail and okPhone and okBank and 
-            okIban and okBic)
+            okIban and okBic
+        )
         return ok
 
 
@@ -341,7 +345,7 @@ class InvoiceTex():
         self.replaceDict = {}
 
     def create(self, company=None, customer=None, invoice=None):
-        if self.company == None or self.customer == None or self.invoice == None:
+        if self.company is None or self.customer is None or self.invoice is None:
             self.company = company
             self.customer = customer
             self.invoice = invoice

@@ -104,7 +104,7 @@ class Controller():
             self.model.myInvoice.addNewInvoicePart()
             ))
         self.gui.btnClose.config(command=self.quit)
-        self.gui.myCustomer.choose.bind('<<ComboboxSelected>>', lambda f: self.onSelectCustomer())        
+        self.gui.myCustomer.choose.bind('<<ComboboxSelected>>', lambda f: self.onSelectCustomer())
 
     def createInvoice(self):
         self.gui.myCustomer.editable(False)
