@@ -164,7 +164,10 @@ class Company():
         okIban = self.iban != ""
         okBic = self.bic != ""
 
-        ok = okCompany and okAddress and okPostcode and okCity and okCountry and okCompany and okMail and okPhone and okBank and okIban and okBic
+        ok = okCompany and okAddress and okPostcode and 
+            okCity and okCountry and okCompany and 
+            okMail and okPhone and okBank and 
+            okIban and okBic
         return ok
 
 
@@ -187,7 +190,6 @@ class Invoice():
             self.totalPrice += _invoice_part.total_unit_price
 
         print("Total Price: " + str(self.totalPrice))
-
 
     class Part():
         def __init__(self, quantity="", unit="", description="", unit_price=""):
@@ -284,8 +286,6 @@ class InitialFile():
                 _customer.createChooseName()
 
                 self.initList.addCustomer(_customer)
-                #self.initChooseCustomerList.append(_customer.choose)
-                #self.initCustomerList.append(_customer)
         except Exception as ex:
             print(ex)
             return
@@ -295,7 +295,7 @@ class InitialFile():
         self.setInvoiceData(invoice)
         self.setCustomerData(customerList)
 
-        with codecs.open(self.path, 'w','utf-8') as iniFile:
+        with codecs.open(self.path, 'w', 'utf-8') as iniFile:
             self.config.write(iniFile)
 
     def setCompanyData(self, company):
@@ -347,14 +347,14 @@ class InvoiceTex():
             self.invoice = invoice
 
         self._fillData()
-        template = codecs.open('template.tex','r','utf-8')
+        template = codecs.open('template.tex', 'r', 'utf-8')
         _data = template.read()
         template.close()
 
         for key in self.replaceDict.keys():
             _data = _data.replace(key, str(self.replaceDict[key]))
 
-        with codecs.open(str(self.invoice.number) + '.tex','w','utf-8') as template:
+        with codecs.open(str(self.invoice.number) + '.tex', 'w', 'utf-8') as template:
             template.write(_data)
 
     def _fillData(self):

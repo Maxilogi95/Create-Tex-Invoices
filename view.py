@@ -13,27 +13,27 @@ from tkinter import messagebox
 class View(Tk):
     def __init__(self):
         Tk.__init__(self)
-        #-----------------------------------------------------------
+        # -----------------------------------------------------------
         # Customer Data
-        #-----------------------------------------------------------
+        # -----------------------------------------------------------
         self.myCustomer = Customer()
         self.myCustomer.grid(row=0, column=0, sticky='nesw')
 
-        #-----------------------------------------------------------
+        # -----------------------------------------------------------
         # My Company Data
-        #-----------------------------------------------------------
+        # -----------------------------------------------------------
         self.myCompany = Company()
         self.myCompany.grid(row=0, column=3, sticky='nesw')
 
-        #-----------------------------------------------------------
+        # -----------------------------------------------------------
         # My Invoice Data
-        #-----------------------------------------------------------
+        # -----------------------------------------------------------
         self.myInvoice = Invoice()
         self.myInvoice.grid(row=3, column=0, columnspan=4, sticky='nesw')
 
-        #-----------------------------------------------------------
+        # -----------------------------------------------------------
         # Buttons
-        #-----------------------------------------------------------
+        # -----------------------------------------------------------
         self.btnCreate = Button(self, text="Create", width=8)
         self.btnCreate.grid(row=20, column=0)
         self.btnClose = Button(self, text="Close", width=8)
@@ -217,8 +217,8 @@ class Invoice(LabelFrame):
         self.myScrollbar.config(command=self.canvas.yview)
         self.canvas.config(yscrollcommand=self.myScrollbar.set)
         self.myScrollbar.grid(row=0, column=1, sticky="nse")
-        
-        self.canvasFrame.bind("<Configure>", lambda e:self.scrollregion())#)self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+
+        self.canvasFrame.bind("<Configure>", lambda e:self.scrollregion())
 
         self.row = 0
 
@@ -242,7 +242,6 @@ class Invoice(LabelFrame):
     def addPart(self):
         self.partList.append(self.Part(self))
 
-
     class Part():
         def __init__(self, root):
             self.root = root
@@ -265,17 +264,10 @@ class Invoice(LabelFrame):
             self.description.grid(row=self.root.row, column=2, columnspan=2, sticky='w')
             self.pricePerUnit.grid(row=self.root.row, column=4, sticky='w')
             self.root.row += 1
-        
-        # self.invoiceTotalPriceUnit = Entry(self, width=30)
-        # self.invoiceTotalPrice = Entry(self, width=30)
 
         def clear(self):
             self.quantity.delete(0, 'end')
             self.unit.delete(0, 'end')
             self.description.delete(0, 'end')
             self.pricePerUnit.delete(0, 'end')
-            # self.invoiceTotalPriceUnit.delete(0, 'end')
             self.unit.delete(0, 'end')
-
-
-# View().mainloop()
