@@ -164,10 +164,10 @@ class Company():
         okIban = self.iban != ""
         okBic = self.bic != ""
 
-        ok = okCompany and okAddress and okPostcode and 
+        ok = (okCompany and okAddress and okPostcode and 
             okCity and okCountry and okCompany and 
             okMail and okPhone and okBank and 
-            okIban and okBic
+            okIban and okBic)
         return ok
 
 
