@@ -9,73 +9,21 @@ class Model():
     def __init__(self):
         print("Model Init")
         self.path = "Invoices.ini"
+
         self.myIni = InitialFile(path=self.path)
+        self.myList = self.myIni.initList
         self.myCompany = self.myIni.initCompany
         self.myInvoice = self.myIni.initInvoice
         self.myTex = InvoiceTex()
-        self.myCustomerList = self.myIni.initCustomerList
-        self.chooseCustomerList = self.myIni.initChooseCustomerList
         self.myCustomer = Customer()
 
         self.msg = ""
         self.msgTitle = ""
 
-    def _isNewCustomer(self, choosedCustomer=""):
-        _new = choosedCustomer == ""
-        return _new
-
-    def _addCustomer(self):
-        self.myCustomer.id = len(self.myCustomerList) + 1
-        self.myCustomer.createChooseName()
-        self.myCustomerList.append(self.myCustomer)
-        self.createChooseCustomerList()
-
-    def createChooseCustomerList(self):
-        self.chooseCustomerList = ['']
-        for myCustomer in self.myCustomerList:
-            self.chooseCustomerList.append(myCustomer.choose)
-
-    def chooseCustomer(self, choosedCustomer=""):
-        if choosedCustomer == "":
-            return
-
-        for myCustomer in self.myCustomerList:
-            _id = choosedCustomer[choosedCustomer.find("(")+1:choosedCustomer.find(")")]
-            print("Compare: " + str(myCustomer.id) + "==" + str(_id))
-            if str(myCustomer.id) == str(_id):
-                self.myCustomer = myCustomer
-                return
-
     def _isAllDataOk(self):
         _ok = False
         _ok = self.myCompany.isDataOk() and self.myCustomer.isDataOk()
         return _ok
-
-    def _doCreateInvoice(self):
-        print("Create Tex File with Input Data")
-        # Here I should have all valid data
-        # Company
-        print(self.myCompany.company)
-        print(self.myCompany.address)
-        print(self.myCompany.postcode)
-        print(self.myCompany.city)
-        print(self.myCompany.country)
-        print(self.myCompany.mail)
-        print(self.myCompany.phone)
-        print(self.myCompany.bank)
-        print(self.myCompany.iban)
-        print(self.myCompany.bic)
-        # Customer
-        print(self.myCustomer.choose)
-        print(self.myCustomer.company)
-        print(self.myCustomer.name1)
-        print(self.myCustomer.name2)
-        print(self.myCustomer.address)
-        print(self.myCustomer.postcode)
-        print(self.myCustomer.city)
-        print(self.myCustomer.country)
-        # Invoice
-        self.myInvoice.calculateTotalPrice()
 
     def createInvoice(self, choosedCustomer=""):
         _save = self._isAllDataOk()
@@ -84,49 +32,76 @@ class Model():
             print("  Message Box: " + self.msg + self.msgTitle)
             return _save
 
-        if self._isNewCustomer(choosedCustomer):
-            self._addCustomer()
-            self.myIni.saveAllData(self.myCompany, self.myCustomerList, self.myInvoice)
+        if choosedCustomer == "":
+            self.myList.addCustomer(self.myCustomer)
+        else:
+            self.myList.createChooseCustomerList()
 
-        self._doCreateInvoice()
+        self.myIni.saveAllData(self.myCompany, self.myList.customerList, self.myInvoice)
+
+        self.myInvoice.calculateTotalPrice()
         self.myTex.create(self.myCompany, self.myCustomer, self.myInvoice)
 
         return _save
 
-    def calculateTotalUnitPrice(self, unit_count, price_per_unit):
-        return unit_count * price_per_unit
+    def onSelectCustomer(self, choosedCustomer):
+        self.myCustomer = self.myList.getSelectedCustomer(choosedCustomer)
 
-    def totalizePrice(self, old_total_price, total_unit_price):
-        return old_total_price + total_unit_price
+class List():
+    """
+    class List:
+        The class will manage the customer lists with ...
+            - ... Customer() objects
+            - ... Choose Name of customer
+    """
+    def __init__(self):
+        self.customerList = list()
+        self.chooseCustomerList = list()
 
-    def _writeInitialFile(self):
-        _content = ""
+    def addCustomer(self, customer):
+        """
+        Description:
+            Add a customer to the customerList. Increase the customer id, if customer do not have an id.
+            Also create the choose name, if no one exist.
+        Arguments:
+            customer: Customer() object
+        """
+        if customer.id == "":
+            customer.id = len(self.customerList) + 1
+        if customer.choose == "":
+            customer.createChooseName()
 
-        _content += "# Path to initial file\n"
-        _content += ""
-        _content += "# Path to company logo"
-        _content += ""
-        _content += "# Path to invoices"
-        _content += ""
-        _content += "# Company data dictionary"
-        _content += self._getAllCompanyData()
-        _content += "# Last invoice number"
-        _content += self._getLastInvoiceNumber()
-        _content += "# Customer data dictionaries"
-        _content += self._getAllCustomerData()
+        self.customerList.append(customer)
+        self.createChooseCustomerList()
 
-        with open('somefile.txt', 'w') as _file:
-            _file.write(_content)
+    def createChooseCustomerList(self):
+        """
+        Description:
+            Create the list of choose names. First, all choose names will be created from all customers,
+            then the choose name will be append to the chooseCustomerList.
+        """
+        self.chooseCustomerList = ['']
+        for customer in self.customerList:
+            customer.createChooseName()
+            self.chooseCustomerList.append(customer.choose)
 
-    def _getAllCompanyData(self):
-        return ""
+    def getSelectedCustomer(self, choosedCustomer=""):
+        """
+        Description:
+            Returns a specific Customer to the choose name.
+            If choose name is "", then a new Customer object will be returned.
+        Arguments:
+            choosedCustomer = ""
+        Return:
+            Customer() object
+        """
+        if choosedCustomer == "":
+            return Customer()
 
-    def _getLastInvoiceNumber(self):
-        return ""
-
-    def _getAllCustomerData(self):
-        return ""
-
+        for customer in self.customerList:
+            _id = choosedCustomer[choosedCustomer.find("(")+1:choosedCustomer.find(")")]
+            if str(customer.id) == str(_id):
+                return customer
 
 class Customer():
     def __init__(self, id="", company="", name1="", name2="", address="", postcode="", city="", country=""):
@@ -138,8 +113,6 @@ class Customer():
         self.postcode = postcode
         self.city = city
         self.country = country
-
-        self.createChooseName()
 
     def createChooseName(self):
         _name = ""
@@ -179,21 +152,20 @@ class Company():
         self.bic = bic
 
     def isDataOk(self):
-        _ok = False
-        _okCompany = self.company != ""
-        _okAddress = self.address != ""
-        _okPostcode = self.postcode != ""
-        _okCity = self.city != ""
-        _okCountry = self.country != ""
-        _okMail = self.mail != ""
-        _okPhone = self.phone != ""
-        _okBank = self.bank != ""
-        _okIban = self.iban != ""
-        _okBic = self.bic != ""
+        ok = False
+        okCompany = self.company != ""
+        okAddress = self.address != ""
+        okPostcode = self.postcode != ""
+        okCity = self.city != ""
+        okCountry = self.country != ""
+        okMail = self.mail != ""
+        okPhone = self.phone != ""
+        okBank = self.bank != ""
+        okIban = self.iban != ""
+        okBic = self.bic != ""
 
-        _ok = _okCompany and _okAddress and _okPostcode and _okCity and _okCountry and _okCompany and _okMail and _okPhone and _okBank and _okIban and _okBic
-        print("Company data: " + str(_ok))
-        return _ok
+        ok = okCompany and okAddress and okPostcode and okCity and okCountry and okCompany and okMail and okPhone and okBank and okIban and okBic
+        return ok
 
 
 class Invoice():
@@ -255,9 +227,8 @@ class InitialFile():
         self.logo = ""
 
         # Data for Customer/Company/Invoice
+        self.initList = List()
         self.initCompany = Company()
-        self.initCustomerList = []
-        self.initChooseCustomerList = []
         self.initInvoice = Invoice()
 
         self.getAllData()
@@ -312,8 +283,9 @@ class InitialFile():
                 _customer.country = self.config.get(_section, 'Country')
                 _customer.createChooseName()
 
-                self.initChooseCustomerList.append(_customer.choose)
-                self.initCustomerList.append(_customer)
+                self.initList.addCustomer(_customer)
+                #self.initChooseCustomerList.append(_customer.choose)
+                #self.initCustomerList.append(_customer)
         except Exception as ex:
             print(ex)
             return
@@ -375,8 +347,6 @@ class InvoiceTex():
             self.invoice = invoice
 
         self._fillData()
-        # with open('template.tex', 'r') as template:
-        #     _data = template.read()
         template = codecs.open('template.tex','r','utf-8')
         _data = template.read()
         template.close()
@@ -386,7 +356,6 @@ class InvoiceTex():
 
         with codecs.open(str(self.invoice.number) + '.tex','w','utf-8') as template:
             template.write(_data)
-        #template.close()
 
     def _fillData(self):
         self.replaceDict = {

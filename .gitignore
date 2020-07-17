@@ -3,3 +3,7 @@ __pycache__/
 
 # Settings
 .vscode/
+
+# Generated Tex files
+*.tex
+!template.tex
