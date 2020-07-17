@@ -78,7 +78,6 @@ class Controller():
         self.model.myCustomer.city = self.gui.myCustomer.city.get()
         self.model.myCustomer.country = self.gui.myCustomer.country.get()
 
-        #self.model.createChooseCustomerList()
         self.gui.myCustomer.choose['values'] = self.model.myList.chooseCustomerList
 
     def _updateInvoiceData(self):
@@ -120,12 +119,10 @@ class Controller():
             return
 
         # Update customer list in VIEW
-        self.model.myList.createChooseCustomerList()
         self.gui.myCustomer.choose['values'] = self.model.myList.chooseCustomerList
         self.gui.myCustomer.choose.set(self.model.myCustomer.choose)
 
     def quit(self):
-        # self.model.myIni.saveAllData(self.model.myCompany, self.model.myCustomerList, self.model.myInvoice)
         self.gui.destroy()
 
 

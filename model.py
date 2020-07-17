@@ -34,6 +34,9 @@ class Model():
 
         if choosedCustomer == "":
             self.myList.addCustomer(self.myCustomer)
+        else:
+            self.myList.createChooseCustomerList()
+
         self.myIni.saveAllData(self.myCompany, self.myList.customerList, self.myInvoice)
 
         self.myInvoice.calculateTotalPrice()
@@ -45,11 +48,24 @@ class Model():
         self.myCustomer = self.myList.getSelectedCustomer(choosedCustomer)
 
 class List():
+    """
+    class List:
+        The class will manage the customer lists with ...
+            - ... Customer() objects
+            - ... Choose Name of customer
+    """
     def __init__(self):
         self.customerList = list()
         self.chooseCustomerList = list()
 
     def addCustomer(self, customer):
+        """
+        Description:
+            Add a customer to the customerList. Increase the customer id, if customer do not have an id.
+            Also create the choose name, if no one exist.
+        Arguments:
+            customer: Customer() object
+        """
         if customer.id == "":
             customer.id = len(self.customerList) + 1
         if customer.choose == "":
@@ -59,11 +75,26 @@ class List():
         self.createChooseCustomerList()
 
     def createChooseCustomerList(self):
+        """
+        Description:
+            Create the list of choose names. First, all choose names will be created from all customers,
+            then the choose name will be append to the chooseCustomerList.
+        """
         self.chooseCustomerList = ['']
         for customer in self.customerList:
+            customer.createChooseName()
             self.chooseCustomerList.append(customer.choose)
 
     def getSelectedCustomer(self, choosedCustomer=""):
+        """
+        Description:
+            Returns a specific Customer to the choose name.
+            If choose name is "", then a new Customer object will be returned.
+        Arguments:
+            choosedCustomer = ""
+        Return:
+            Customer() object
+        """
         if choosedCustomer == "":
             return Customer()
 
@@ -82,8 +113,6 @@ class Customer():
         self.postcode = postcode
         self.city = city
         self.country = country
-
-        self.createChooseName()
 
     def createChooseName(self):
         _name = ""
@@ -318,8 +347,6 @@ class InvoiceTex():
             self.invoice = invoice
 
         self._fillData()
-        # with open('template.tex', 'r') as template:
-        #     _data = template.read()
         template = codecs.open('template.tex','r','utf-8')
         _data = template.read()
         template.close()
@@ -329,7 +356,6 @@ class InvoiceTex():
 
         with codecs.open(str(self.invoice.number) + '.tex','w','utf-8') as template:
             template.write(_data)
-        #template.close()
 
     def _fillData(self):
         self.replaceDict = {
