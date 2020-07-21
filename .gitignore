@@ -4,6 +4,9 @@ __pycache__/
 # Settings
 .vscode/
 
+# Initial file
+Invoices.ini
+
 # Generated Tex files
 *.tex
 !template.tex
