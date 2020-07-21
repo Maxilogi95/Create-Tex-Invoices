@@ -20,9 +20,6 @@ class Controller():
         self.gui.mainloop()
 
     def _setInitialView(self):
-        print("Read Init File")
-        self.gui.myCustomer.choose['values'] = self.model.myList.chooseCustomerList
-
         self.gui.myCompany.name.insert(0, self.model.myCompany.company)
         self.gui.myCompany.street.insert(0, self.model.myCompany.address)
         self.gui.myCompany.postcode.insert(0, self.model.myCompany.postcode)
@@ -33,6 +30,9 @@ class Controller():
         self.gui.myCompany.bank.insert(0, self.model.myCompany.bank)
         self.gui.myCompany.iban.insert(0, self.model.myCompany.iban)
         self.gui.myCompany.bic.insert(0, self.model.myCompany.bic)
+
+        # Update invoice number and choose name(s)
+        self._updateGUI()
 
     def onSelectCustomer(self):
         self.model.onSelectCustomer(self.gui.myCustomer.choose.get())
@@ -81,7 +81,6 @@ class Controller():
         self.gui.myCustomer.choose['values'] = self.model.myList.chooseCustomerList
 
     def _updateInvoiceData(self):
-        self.model.myInvoice.number = self.gui.myInvoice.number.get()
         _i = 0
         for _part in self.gui.myInvoice.partList:
             self.model.myInvoice.invoiceList[_i].quantity = _part.quantity.get()
@@ -94,6 +93,21 @@ class Controller():
         self._updateCustomerData()
         self._updateCompanyData()
         self._updateInvoiceData()
+
+    def _updateGUI(self, isCreated=True):
+        if not isCreated:
+            self.gui.myCustomer.editable(True)
+            return
+
+        # Update invoice number
+        self.gui.myInvoice.number.config(state='normal')
+        self.gui.myInvoice.number.delete(0,'end')
+        self.gui.myInvoice.number.insert(0,int(self.model.myInvoice.number)+1)
+        self.gui.myInvoice.number.config(state='disabled')
+
+        # Update customer list in VIEW
+        self.gui.myCustomer.choose['values'] = self.model.myList.chooseCustomerList
+        self.gui.myCustomer.choose.set(self.model.myCustomer.choose)
 
     def _configView(self):
         print("Config View")
@@ -114,13 +128,8 @@ class Controller():
         # Create invoice with all updated data
         _created = self.model.createInvoice(self.gui.myCustomer.choose.get())
 
-        if not _created:
-            self.gui.myCustomer.editable(True)
-            return
-
-        # Update customer list in VIEW
-        self.gui.myCustomer.choose['values'] = self.model.myList.chooseCustomerList
-        self.gui.myCustomer.choose.set(self.model.myCustomer.choose)
+        # Update GUI
+        self._updateGUI(isCreated=_created)
 
     def quit(self):
         self.gui.destroy()

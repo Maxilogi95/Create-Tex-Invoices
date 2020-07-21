@@ -37,6 +37,7 @@ class Model():
         else:
             self.myList.createChooseCustomerList()
 
+        self.myInvoice.number = str(int(self.myInvoice.number) + 1)
         self.myIni.saveAllData(self.myCompany, self.myList.customerList, self.myInvoice)
 
         self.myInvoice.calculateTotalPrice()
@@ -115,6 +116,7 @@ class Customer():
         self.postcode = postcode
         self.city = city
         self.country = country
+        self.choose = ""
 
     def createChooseName(self):
         _name = ""
@@ -168,8 +170,8 @@ class Company():
 
         ok = (
             okCompany and okAddress and okPostcode and
-            okCity and okCountry and okCompany and 
-            okMail and okPhone and okBank and 
+            okCity and okCountry and okCompany and
+            okMail and okPhone and okBank and
             okIban and okBic
         )
         return ok

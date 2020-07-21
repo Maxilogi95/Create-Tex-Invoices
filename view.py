@@ -197,7 +197,8 @@ class Invoice(LabelFrame):
         self.row = 0
 
         self.lblNumber = Label(self, text="Rechnungsnummer:")
-        self.number = Spinbox(self, from_=0, to=1000000, wrap=True, increment=1)
+        self.number = Spinbox(self, from_=1, to=1000000, wrap=True, increment=1)
+        #self.number = Entry(self)
         self.btnAdd = Button(self, text="+", width=2)
 
         self.lblNumber.grid(row=self.row, column=0, sticky='w')
