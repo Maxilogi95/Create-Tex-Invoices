@@ -107,9 +107,17 @@ class List():
 
 
 class Customer():
-    def __init__(self, id="", company="", name1="", name2="", address="", postcode="", city="", country=""):
+    def __init__(
+        self, 
+        id="", 
+        company="", 
+        form="", title="", name1="", name2="", 
+        address="", postcode="", city="", country=""
+        ):
         self.id = id
         self.company = company
+        self.form = form
+        self.title = title
         self.name1 = name1
         self.name2 = name2
         self.address = address
@@ -283,6 +291,8 @@ class InitialFile():
                 _customer = Customer()
                 _customer.id = self.config.get(_section, 'Id')
                 _customer.company = self.config.get(_section, 'Company')
+                _customer.form = self.config.get(_section, 'Form')
+                _customer.title = self.config.get(_section, 'Title')
                 _customer.name1 = self.config.get(_section, 'FirstName')
                 _customer.name2 = self.config.get(_section, 'LastName')
                 _customer.address = self.config.get(_section, 'Street')
@@ -330,6 +340,8 @@ class InitialFile():
             self.config['Customer' + str(customer.id)] = {
                 'Id': customer.id,
                 'Company': customer.company,
+                'Form': customer.form,
+                'Title': customer.title,
                 'FirstName': customer.name1,
                 'LastName': customer.name2,
                 'Street': customer.address,
@@ -364,6 +376,14 @@ class InvoiceTex():
             template.write(_data)
 
     def _fillData(self):
+        form = "Sehr geehrte Damen und Herren"
+        if self.customer.form == "Frau" and self.customer.name2 != "":
+            form = "Sehr geehrte Frau " + self.customer.name2 
+        elif self.customer.form == "Herr" and self.customer.name2 != "":
+            form = "Sehr geehrter Herr " + self.customer.name2 
+        elif self.customer.form == "" and self.customer.name2 != "":
+            form = "Sehr geehrte/-r Frau/Herr " + self.customer.name2 
+
         self.replaceDict = {
             # Company Data
             "<NAME>":       self.company.company,
@@ -386,7 +406,9 @@ class InvoiceTex():
             "<INVOICENO>":  self.invoice.number,
             "<INVOICETITLE>": "",
             "<INVOICEDATA>": self._generateInvoiceData(),
-            "<INVOICESUM>": self.invoice.totalPrice
+            "<INVOICESUM>": self.invoice.totalPrice,
+            # Letter
+            "<FORM>": form
         }
 
     def _generateInvoiceData(self):

@@ -10,3 +10,9 @@ Invoices.ini
 # Generated Tex files
 *.tex
 !template.tex
+*.aux
+*.fdb*
+*.fls
+*.log
+*.pdf
+*.synctex*

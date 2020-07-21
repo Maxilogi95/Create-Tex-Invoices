@@ -39,6 +39,8 @@ class Controller():
 
         self.gui.myCustomer.editable(True)
         self.gui.myCustomer.company.delete(0, 'end')
+        self.gui.myCustomer.form.delete(0, 'end')
+        self.gui.myCustomer.title.delete(0, 'end')
         self.gui.myCustomer.name1.delete(0, 'end')
         self.gui.myCustomer.name2.delete(0, 'end')
         self.gui.myCustomer.street.delete(0, 'end')
@@ -48,6 +50,8 @@ class Controller():
 
         if self.gui.myCustomer.choose.get() != "":
             self.gui.myCustomer.company.insert(0, self.model.myCustomer.company)
+            self.gui.myCustomer.form.insert(0, self.model.myCustomer.form)
+            self.gui.myCustomer.title.insert(0, self.model.myCustomer.title)
             self.gui.myCustomer.name1.insert(0, self.model.myCustomer.name1)
             self.gui.myCustomer.name2.insert(0, self.model.myCustomer.name2)
             self.gui.myCustomer.street.insert(0, self.model.myCustomer.address)
@@ -71,6 +75,8 @@ class Controller():
     def _updateCustomerData(self):
         self.model.myCustomer.choose = self.gui.myCustomer.choose.get()
         self.model.myCustomer.company = self.gui.myCustomer.company.get()
+        self.model.myCustomer.form = self.gui.myCustomer.form.get()
+        self.model.myCustomer.title = self.gui.myCustomer.title.get()
         self.model.myCustomer.name1 = self.gui.myCustomer.name1.get()
         self.model.myCustomer.name2 = self.gui.myCustomer.name2.get()
         self.model.myCustomer.address = self.gui.myCustomer.street.get()
@@ -101,8 +107,8 @@ class Controller():
 
         # Update invoice number
         self.gui.myInvoice.number.config(state='normal')
-        self.gui.myInvoice.number.delete(0,'end')
-        self.gui.myInvoice.number.insert(0,int(self.model.myInvoice.number)+1)
+        self.gui.myInvoice.number.delete(0, 'end')
+        self.gui.myInvoice.number.insert(0, int(self.model.myInvoice.number)+1)
         self.gui.myInvoice.number.config(state='disabled')
 
         # Update customer list in VIEW
@@ -111,14 +117,20 @@ class Controller():
 
     def _configView(self):
         print("Config View")
-        self.gui.btnCreate.config(command=self.createInvoice)
+        # Customer
         self.gui.myCustomer.btnChange.config(command=lambda: self.gui.myCustomer.editable(True))
+        self.gui.myCustomer.choose.bind('<<ComboboxSelected>>', lambda f: self.onSelectCustomer())
+        self.gui.myCustomer.form.config(values=['', 'Frau', 'Herr'], state='readonly')
+        # Company
+
+        # Invoice
         self.gui.myInvoice.btnAdd.config(command=lambda: (
             self.gui.myInvoice.addPart(),
             self.model.myInvoice.addNewInvoicePart()
             ))
+        # Other GUI components
+        self.gui.btnCreate.config(command=self.createInvoice)
         self.gui.btnClose.config(command=self.quit)
-        self.gui.myCustomer.choose.bind('<<ComboboxSelected>>', lambda f: self.onSelectCustomer())
 
     def createInvoice(self):
         self.gui.myCustomer.editable(False)

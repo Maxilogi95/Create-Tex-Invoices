@@ -58,8 +58,12 @@ class Customer(LabelFrame):
         self.lblCompany = Label(self, text="Firma:")
         self.company = Entry(self, width=63)
         self.frameName = Frame(self)
+        self.lblForm = Label(self.frameName, text="Anrede:")
+        self.lblTitle = Label(self.frameName, text="Titel:")
         self.lblName1 = Label(self.frameName, text="Vorname:")
         self.lblName2 = Label(self.frameName, text="Nachname:")
+        self.form = ttk.Combobox(self.frameName, width=28)
+        self.title = Entry(self.frameName, width=31)
         self.name1 = Entry(self.frameName, width=31)
         self.name2 = Entry(self.frameName, width=31)
         self.lblCompany.grid(row=start_row, column=0, sticky='w')
@@ -67,10 +71,14 @@ class Customer(LabelFrame):
         self.company.grid(row=start_row, column=0, columnspan=maxColCount, sticky='w', padx=1)
         start_row += 1
         self.frameName.grid(row=start_row, column=0, sticky='w', columnspan=maxColCount)
-        self.lblName1.grid(row=0, column=0, sticky='w')
-        self.lblName2.grid(row=0, column=1, sticky='w')
-        self.name1.grid(row=1, column=0, sticky='w', padx=1)
-        self.name2.grid(row=1, column=1, sticky='w', padx=1)
+        self.lblForm.grid(row=0, column=0, sticky='w')
+        self.lblTitle.grid(row=0, column=1, sticky='w')
+        self.form.grid(row=1, column=0, sticky='w', padx=1)
+        self.title.grid(row=1, column=1, sticky='w', padx=1)
+        self.lblName1.grid(row=2, column=0, sticky='w')
+        self.lblName2.grid(row=2, column=1, sticky='w')
+        self.name1.grid(row=3, column=0, sticky='w', padx=1)
+        self.name2.grid(row=3, column=1, sticky='w', padx=1)
         start_row += 1
 
         self.lblAddress = Label(self, text="Addresse:")
@@ -108,6 +116,8 @@ class Customer(LabelFrame):
             state = "normal"
 
         self.company.config(state=state)
+        self.form.config(state=state)
+        self.title.config(state=state)
         self.name1.config(state=state)
         self.name2.config(state=state)
         self.street.config(state=state)
@@ -198,7 +208,6 @@ class Invoice(LabelFrame):
 
         self.lblNumber = Label(self, text="Rechnungsnummer:")
         self.number = Spinbox(self, from_=1, to=1000000, wrap=True, increment=1)
-        #self.number = Entry(self)
         self.btnAdd = Button(self, text="+", width=2)
 
         self.lblNumber.grid(row=self.row, column=0, sticky='w')
