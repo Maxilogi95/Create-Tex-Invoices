@@ -2,18 +2,18 @@
 # -*- coding: utf-8 -*-
 
 from tkinter import Entry, Label, Frame, LabelFrame, Button, Tk, Spinbox, Canvas, Scrollbar
-from tkinter import ttk
+from tkinter import ttk, IntVar
 from tkinter import messagebox
 
 # IDEAS:
 # Sort Combobox of custumers with radiobuttons (by number, name1, name2)
 # filter Combobox of custumers + reset filter and sort
-# Mindestgröße / Maximalgröße
 
 
 class View(Tk):
     def __init__(self):
         Tk.__init__(self)
+        self.title("Rechnung erstellen...")
         # -----------------------------------------------------------
         # Customer Data
         # -----------------------------------------------------------
@@ -40,75 +40,109 @@ class View(Tk):
         self.btnClose = Button(self, text="Close", width=8)
         self.btnClose.grid(row=20, column=3)
 
+        # -----------------------------------------------------------
+        # Window Size
+        # -----------------------------------------------------------
+        self.update()
+        self.resizable(0,0)
+        self.minsize(self.winfo_width(), self.winfo_height())
+        self.maxsize(self.winfo_width(), self.winfo_height())
+
 
 class Customer(LabelFrame):
     def __init__(self):
         LabelFrame.__init__(self, text="Kunde")
         start_row = 0
-        maxColCount = 3
-        # Customer - Labels + Comboboxes
-        self.lblChoose = Label(self, text="Kunde auswählen:")
-        self.choose = ttk.Combobox(self, width=60, state='readonly')
-        self.lblChoose.grid(row=start_row, column=0, sticky='w')
-        start_row += 1
-        self.choose.grid(row=start_row, column=0, sticky='w', columnspan=maxColCount, padx=1)
+        # -------------------------------------------------------------------
+        # Row 0 - lblframeSort
+        # -------------------------------------------------------------------
+        # Labels + Comboboxes
+        self.lblframeSort = LabelFrame(self, text="Sortieren")
+        self.lblframeSort.grid(row=start_row, column=0, sticky='w')
+
+        self._addSortableChooseList(self.lblframeSort)
+
         start_row += 1
 
+        # -------------------------------------------------------------------
+        # Row 1 - lblframeData
+        # -------------------------------------------------------------------
         # Customer - Labels + Entries
-        self.lblCompany = Label(self, text="Firma:")
-        self.company = Entry(self, width=63)
-        self.frameName = Frame(self)
+        self.lblframeData = LabelFrame(self, text="Kundendaten")
+        self.lblframeData.grid(row=start_row, column=0, sticky='w')
+
+        self._addDataFields(self.lblframeData)
+
+        start_row += 1
+
+    def _addSortableChooseList(self, master):
+        # Row 0
+        self.sort = IntVar()
+        self.rdbName2 = ttk.Radiobutton(master, text="Nachname", variable=self.sort, value=0)
+        self.rdbName2.grid(row=0, column=0, sticky='w')
+        self.rdbCompany = ttk.Radiobutton(master, text="Firma", variable=self.sort, value=1)
+        self.rdbCompany.grid(row=0, column=1, sticky='w')
+        self.rdbNumber = ttk.Radiobutton(master, text="Kundennummer", variable=self.sort, value=2)
+        self.rdbNumber.grid(row=0, column=2, sticky='w')
+        # Row 1
+        self.lblChoose = Label(master, text="Kunde auswählen:")
+        self.lblChoose.grid(row=1, column=0, sticky='w')
+        # Row 2
+        self.choose = ttk.Combobox(master, width=60, state='readonly')
+        self.choose.grid(row=2, column=0, sticky='w', columnspan=3, padx=1)
+
+    def _addDataFields(self, master):
+        # Row 0
+        self.lblCompany = Label(master, text="Firma:")
+        self.lblCompany.grid(row=0, column=0, sticky='w')
+        # Row 1
+        self.company = Entry(master, width=63)
+        self.company.grid(row=1, column=0, columnspan=3, sticky='w', padx=1)
+        # Row 2
+        self.frameName = Frame(master)
+        self.frameName.grid(row=2, column=0, sticky='w', columnspan=3)
         self.lblForm = Label(self.frameName, text="Anrede:")
-        self.lblTitle = Label(self.frameName, text="Titel:")
-        self.lblName1 = Label(self.frameName, text="Vorname:")
-        self.lblName2 = Label(self.frameName, text="Nachname:")
-        self.form = ttk.Combobox(self.frameName, width=28)
-        self.title = Entry(self.frameName, width=31)
-        self.name1 = Entry(self.frameName, width=31)
-        self.name2 = Entry(self.frameName, width=31)
-        self.lblCompany.grid(row=start_row, column=0, sticky='w')
-        start_row += 1
-        self.company.grid(row=start_row, column=0, columnspan=maxColCount, sticky='w', padx=1)
-        start_row += 1
-        self.frameName.grid(row=start_row, column=0, sticky='w', columnspan=maxColCount)
         self.lblForm.grid(row=0, column=0, sticky='w')
+        self.lblTitle = Label(self.frameName, text="Titel:")
         self.lblTitle.grid(row=0, column=1, sticky='w')
+        self.form = ttk.Combobox(self.frameName, width=28)
         self.form.grid(row=1, column=0, sticky='w', padx=1)
+        self.title = Entry(self.frameName, width=31)
         self.title.grid(row=1, column=1, sticky='w', padx=1)
+        self.lblName1 = Label(self.frameName, text="Vorname:")
         self.lblName1.grid(row=2, column=0, sticky='w')
+        self.lblName2 = Label(self.frameName, text="Nachname:")
         self.lblName2.grid(row=2, column=1, sticky='w')
+        self.name1 = Entry(self.frameName, width=31)
         self.name1.grid(row=3, column=0, sticky='w', padx=1)
+        self.name2 = Entry(self.frameName, width=31)
         self.name2.grid(row=3, column=1, sticky='w', padx=1)
-        start_row += 1
-
-        self.lblAddress = Label(self, text="Addresse:")
-        self.street = Entry(self, width=63)
-        self.lblAddress.grid(row=start_row, column=0, sticky='w')
-        start_row += 1
-        self.street.grid(row=start_row, column=0, sticky='w', columnspan=maxColCount, padx=1)
-        start_row += 1
-
-        self.frameCodeCity = Frame(self)
+        # Row 3
+        self.lblAddress = Label(master, text="Addresse:")
+        self.lblAddress.grid(row=3, column=0, sticky='w')
+        # Row 4
+        self.street = Entry(master, width=63)
+        self.street.grid(row=4, column=0, sticky='w', columnspan=3, padx=1)
+        # Row 5
+        self.frameCodeCity = Frame(master)
+        self.frameCodeCity.grid(row=5, column=0, sticky='w', columnspan=3)
         self.lblPostcode = Label(self.frameCodeCity, text="PLZ:")
-        self.postcode = Entry(self.frameCodeCity, width=10)
-        self.lblCity = Label(self.frameCodeCity, text="Ort:")
-        self.city = Entry(self.frameCodeCity, width=52)
-        self.frameCodeCity.grid(row=start_row, column=0, sticky='w', columnspan=maxColCount)
         self.lblPostcode.grid(row=0, column=0, sticky='w')
+        self.lblCity = Label(self.frameCodeCity, text="Ort:")
         self.lblCity.grid(row=0, column=1, sticky='w')
+        self.postcode = Entry(self.frameCodeCity, width=10)
         self.postcode.grid(row=1, column=0, sticky='w', padx=1)
+        self.city = Entry(self.frameCodeCity, width=52)
         self.city.grid(row=1, column=1, sticky='w', padx=1)
-        start_row += 1
-
-        self.lblCountry = Label(self, text="Land:")
-        self.country = Entry(self, width=63)
-        self.lblCountry.grid(row=start_row, column=0, sticky='w')
-        start_row += 1
-        self.country.grid(row=start_row, column=0, sticky='w', columnspan=maxColCount, padx=1)
-        start_row += 1
-
-        self.btnChange = Button(self, text="Change", width=8)
-        self.btnChange.grid(row=start_row, column=2, sticky='e')
+        # Row 6
+        self.lblCountry = Label(master, text="Land:")
+        self.lblCountry.grid(row=6, column=0, sticky='w')
+        # Row 7
+        self.country = Entry(master, width=63)
+        self.country.grid(row=7, column=0, sticky='w', columnspan=3, padx=1)
+        # Row 8
+        self.btnChange = Button(master, text="Change", width=8)
+        self.btnChange.grid(row=8, column=2, sticky='e')
 
     def editable(self, enable=True):
         state = "disabled"

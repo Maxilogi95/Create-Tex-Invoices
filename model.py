@@ -87,6 +87,31 @@ class List():
             customer.createChooseName()
             self.chooseCustomerList.append(customer.choose)
 
+    def sortChooseCustomerList(self, value):
+        """
+        Description:
+            Sort the list of choose names.
+        value:
+            0 = names
+            1 = company
+            2 = customer id
+        """
+        def sortName():
+            print("TBD - Name")
+
+        def sortCompany():
+            print("TBD - Company")
+
+        def sortID():
+            print("TBD - ID")
+
+        if value == 0:
+            sortName()
+        elif value == 1:
+            sortCompany()
+        else:
+            sortID()
+
     def getSelectedCustomer(self, choosedCustomer=""):
         """
         Description:
@@ -108,12 +133,11 @@ class List():
 
 class Customer():
     def __init__(
-        self, 
-        id="", 
-        company="", 
-        form="", title="", name1="", name2="", 
-        address="", postcode="", city="", country=""
-        ):
+        self,
+        id="",
+        company="",
+        form="", title="", name1="", name2="",
+        address="", postcode="", city="", country=""):
         self.id = id
         self.company = company
         self.form = form
@@ -378,11 +402,11 @@ class InvoiceTex():
     def _fillData(self):
         form = "Sehr geehrte Damen und Herren"
         if self.customer.form == "Frau" and self.customer.name2 != "":
-            form = "Sehr geehrte Frau " + self.customer.name2 
+            form = "Sehr geehrte Frau " + self.customer.name2
         elif self.customer.form == "Herr" and self.customer.name2 != "":
-            form = "Sehr geehrter Herr " + self.customer.name2 
+            form = "Sehr geehrter Herr " + self.customer.name2
         elif self.customer.form == "" and self.customer.name2 != "":
-            form = "Sehr geehrte/-r Frau/Herr " + self.customer.name2 
+            form = "Sehr geehrte/-r Frau/Herr " + self.customer.name2
 
         self.replaceDict = {
             # Company Data
