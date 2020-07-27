@@ -32,6 +32,7 @@ class Controller():
         self.gui.myCompany.bic.insert(0, self.model.myCompany.bic)
 
         # Update invoice number and choose name(s)
+        self.gui.myCustomer.sort.set(2)
         self._updateGUI()
 
     def onSelectCustomer(self):
@@ -112,7 +113,6 @@ class Controller():
         self.gui.myInvoice.number.config(state='disabled')
 
         # Update customer list in VIEW
-        self.gui.myCustomer.sort.set(2)
         self.gui.myCustomer.choose['values'] = self.model.myList.chooseCustomerList
         self.gui.myCustomer.choose.set(self.model.myCustomer.choose)
 
@@ -123,14 +123,14 @@ class Controller():
         self.gui.myCustomer.choose.bind('<<ComboboxSelected>>', lambda f: self.onSelectCustomer())
         self.gui.myCustomer.form.config(values=['', 'Frau', 'Herr'], state='readonly')
         self.gui.myCustomer.rdbName2.config(command=lambda:
-            self.model.myList.sortChooseCustomerList(self.gui.myCustomer.sort.get())
-            )
+            (self.model.myList.sortChooseCustomerList(self.gui.myCustomer.sort.get()),
+            self._updateGUI()))
         self.gui.myCustomer.rdbCompany.config(command=lambda:
-            self.model.myList.sortChooseCustomerList(self.gui.myCustomer.sort.get())
-            )
+            (self.model.myList.sortChooseCustomerList(self.gui.myCustomer.sort.get()),
+            self._updateGUI()))
         self.gui.myCustomer.rdbNumber.config(command=lambda:
-            self.model.myList.sortChooseCustomerList(self.gui.myCustomer.sort.get())
-            )
+            (self.model.myList.sortChooseCustomerList(self.gui.myCustomer.sort.get()),
+            self._updateGUI()))
         # Company
 
         # Invoice

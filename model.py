@@ -59,6 +59,8 @@ class List():
     def __init__(self):
         self.customerList = list()
         self.chooseCustomerList = list()
+        # Sort by ID = 2
+        self.sort = 2
 
     def addCustomer(self, customer):
         """
@@ -74,7 +76,7 @@ class List():
             customer.createChooseName()
 
         self.customerList.append(customer)
-        self.createChooseCustomerList()
+        self.sortChooseCustomerList(self.sort)
 
     def createChooseCustomerList(self):
         """
@@ -96,21 +98,15 @@ class List():
             1 = company
             2 = customer id
         """
-        def sortName():
-            print("TBD - Name")
-
-        def sortCompany():
-            print("TBD - Company")
-
-        def sortID():
-            print("TBD - ID")
-
-        if value == 0:
-            sortName()
-        elif value == 1:
-            sortCompany()
+        self.sort = value
+        if self.sort == 0:
+            self.customerList.sort(key=lambda x: x.name2.lower())
+        elif self.sort == 1:
+            self.customerList.sort(key=lambda x: x.company.lower())
         else:
-            sortID()
+            self.customerList.sort(key=lambda x: str(x.id))
+
+        self.createChooseCustomerList()
 
     def getSelectedCustomer(self, choosedCustomer=""):
         """

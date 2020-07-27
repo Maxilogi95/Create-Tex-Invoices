@@ -44,7 +44,7 @@ class View(Tk):
         # Window Size
         # -----------------------------------------------------------
         self.update()
-        self.resizable(0,0)
+        self.resizable(0, 0)
         self.minsize(self.winfo_width(), self.winfo_height())
         self.maxsize(self.winfo_width(), self.winfo_height())
 
