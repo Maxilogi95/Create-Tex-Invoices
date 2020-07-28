@@ -396,13 +396,22 @@ class InvoiceTex():
             template.write(_data)
 
     def _fillData(self):
+        name = ""
+        title = ""
+        if self.customer.title != "" and (self.customer.name1 != "" or self.customer.name2 != ""):
+            title = self.customer.title + " "
+        if self.customer.name1 != "":
+            name = title + self.customer.name1 + " " + self.customer.name2
+        else:
+            name = title + self.customer.name2
+
         form = "Sehr geehrte Damen und Herren"
         if self.customer.form == "Frau" and self.customer.name2 != "":
-            form = "Sehr geehrte Frau " + self.customer.name2
+            form = "Sehr geehrte Frau " + title + self.customer.name2
         elif self.customer.form == "Herr" and self.customer.name2 != "":
-            form = "Sehr geehrter Herr " + self.customer.name2
+            form = "Sehr geehrter Herr " + title + self.customer.name2
         elif self.customer.form == "" and self.customer.name2 != "":
-            form = "Sehr geehrte/-r Frau/Herr " + self.customer.name2
+            form = "Sehr geehrte/-r Frau/Herr " + title + self.customer.name2
 
         self.replaceDict = {
             # Company Data
@@ -418,7 +427,7 @@ class InvoiceTex():
             # Customer Data
             "<CUSTOMERID>":         self.customer.id,
             "<CUSTOMERCOMPANY>":    self.customer.company,
-            "<CUSTOMERNAME>":       self.customer.name1 + " " + self.customer.name2,
+            "<CUSTOMERNAME>":       name,
             "<CUSTOMERSTREET>":     self.customer.address,
             "<CUSTOMERPOSTCODE>":   self.customer.postcode,
             "<CUSTOMERCITY>":       self.customer.city,
@@ -426,12 +435,16 @@ class InvoiceTex():
             "<INVOICENO>":  self.invoice.number,
             "<INVOICETITLE>": "",
             "<INVOICEDATA>": self._generateInvoiceData(),
-            "<INVOICESUM>": self.invoice.totalPrice,
+            "<INVOICESUM>": "{:.2f}".format(float(self.invoice.totalPrice)),
             # Letter
             "<FORM>": form
         }
 
     def _generateInvoiceData(self):
+        data = ""
         for part in self.invoice.invoiceList:
-            print()
-        return ""
+            if part.valid:
+                print("{:.2f}".format(float(part.unit_price)))
+                print("{:.2f}".format(float(part.total_unit_price)))
+                data += str(part.quantity) + "&" + part.unit + "&" + part.description + "&\\multicolumn{1}{r}{" + "{:.2f}".format(float(part.unit_price)) + " EUR}" + "&\\multicolumn{1}{r}{" + "{:.2f}".format(float(part.total_unit_price)) + " EUR}\\\\ \\hline" + "\n"
+        return data
